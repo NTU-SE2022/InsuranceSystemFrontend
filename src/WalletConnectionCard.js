@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faWallet } from '@fortawesome/free-solid-svg-icons';
 
 const bull = (
   <Box
@@ -21,17 +21,17 @@ const card = (
   <React.Fragment>
     <CardContent>
       <Typography variant="h5" component="div">
-        <FontAwesomeIcon icon={faUsers} fontSize="100px"/>
+        <FontAwesomeIcon icon={faWallet} fontSize="100px"/>
       </Typography>
       <Typography sx={{ mb: 1.5 }} color="text.secondary">
-        Patients
+        Wallet
       </Typography>
       <Typography variant="body2">
         Connect your wallet.
       </Typography>
     </CardContent>
     <CardActions>
-      <Button variant="contained" style={{margin: '0 auto', display: "flex"}}>Connect</Button>
+      <Button variant="contained" style={{margin: '0 auto', display: "flex"}} href="connect">Connect</Button>
     </CardActions>
   </React.Fragment>
 );
