@@ -9,8 +9,10 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
-
-
+import { Pagination} from '@mui/material';
+import { BorderBox } from './PolicyCard';
+import {Stack} from '@mui/material';
+import {BuyPolicyDialog,ErrorDialog} from './ShowDialog';
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
@@ -23,6 +25,16 @@ interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
+}
+
+interface Policy {
+  companyname: string;
+  policyname: string;
+  category:string;
+  feature:string[];
+  coverage:string[];
+  amount:number;
+  cost:number
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -54,11 +66,53 @@ function a11yProps(index: number) {
 
 
 export default function InsuranceLogged() {
+  const allPolicy = [
+    {
+      companyname: '1',
+      policyname: '1',
+      category:'1',
+      feature:['1','1'],
+      coverage:['1','1'],
+      amount:1,
+      cost:1,
+    },
+    {
+      companyname: '2',
+      policyname: '2',
+      category:'2',
+      feature:['2','2'],
+      coverage:['2','2'],
+      amount:1,
+      cost:1,
+    }
+  ];
   const [value, setValue] = React.useState(0);
+  const [open,setOpen] = React.useState(false);
+  const [onHealthError,setOnHealthError] = React.useState(false);
+  const [onBuySuccess, setOnBuySuccess] = React.useState(false);
+  const [onBuyError, setOnBuyError] = React.useState(false);
+  const [healthVerfication,sethealthVerfication] = React.useState(true);
+  const [nowPolicy,setNowPolicy] = React.useState(allPolicy[0]);
+  const [ownPolicy,setOwnPolicy] = React.useState<Policy[]>([]);
 
+  const handleBuyClick = () => {
+    if(healthVerfication){
+      setOpen(true);
+    }
+    else{
+      setOnHealthError(true);
+    }
+  }
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+  const addOwnPolicy = (addPolicy: Policy) =>{
+    setOwnPolicy([...ownPolicy,addPolicy]);
+    console.log(ownPolicy);
+  };
+  const handlePolicyChange = (event: React.ChangeEvent<unknown>,page:number) =>{
+    setNowPolicy(allPolicy[page-1])
+  }
   return (
     <Container>
       <Box sx={{ width: '100%' }}>
@@ -84,6 +138,14 @@ export default function InsuranceLogged() {
             <TextField id="Keyword" label="Keyword" variant="standard" />
             <Button variant="outlined">Search</Button>
           </Box>
+            <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><BorderBox value={nowPolicy} onclick={handleBuyClick} ></BorderBox></Box>
+              <BuyPolicyDialog value={open} onClose={()=>{setOpen(false)}} onPolicyNumber={addOwnPolicy} onsuccess={() => setOnBuySuccess(true)} onerror={()=>setOnBuyError(true)} policy={nowPolicy}></BuyPolicyDialog>
+              <ErrorDialog value={onBuySuccess} title={'購買成功！'} context={`成功購買${nowPolicy.amount}單位！已從帳戶扣款${nowPolicy.cost}ETH。`} onClose={()=>{ setOnBuySuccess(false)}}></ErrorDialog>
+              <ErrorDialog value={onBuyError} title={'購買失敗！'} context={`你帳戶餘額低於${nowPolicy.cost}ETH，請確認帳戶餘額充足後再試一次。`} onClose={()=>{setOnBuyError(false)}}></ErrorDialog>
+              <ErrorDialog value={onHealthError} title={'不符合資格'} context={'你的健康狀況並不符合加保資格！請參考其他保單，或洽保險公司諮詢。'} onClose={()=>{setOnHealthError(false)}}></ErrorDialog>
+            <Stack alignItems="center">
+              <Pagination count={allPolicy.length} variant="outlined" shape="rounded" sx={{margin: "auto"}} onChange={handlePolicyChange}/>
+            </Stack>
         </TabPanel>
         <TabPanel value={value} index={1}>
           Own Policies
