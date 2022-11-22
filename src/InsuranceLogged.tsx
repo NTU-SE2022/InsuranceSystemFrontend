@@ -13,6 +13,25 @@ import { Pagination} from '@mui/material';
 import { BorderBox } from './PolicyCard';
 import {Stack} from '@mui/material';
 import {BuyPolicyDialog,ErrorDialog} from './ShowDialog';
+
+
+
+import axios from "axios";
+
+
+
+const config = {
+  baseURL: "http://localhost:3000/data/test.json",
+}
+
+// axios(config).then(function (response){
+//   console.log(response);
+// }).catch(function(error){
+//   console.log(error);
+// });
+
+
+
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
@@ -65,6 +84,9 @@ function a11yProps(index: number) {
 }
 
 
+
+
+
 export default function InsuranceLogged() {
   const allPolicy = [
     {
@@ -94,6 +116,25 @@ export default function InsuranceLogged() {
   const [healthVerfication,sethealthVerfication] = React.useState(true);
   const [nowPolicy,setNowPolicy] = React.useState(allPolicy[0]);
   const [ownPolicy,setOwnPolicy] = React.useState<Policy[]>([]);
+
+  // type script
+  const config = {
+    baseURL: "http://localhost:3000/data/test.json",
+  }
+  const [clickedButton, setClickedButton] = React.useState('');
+  const handleGetDataClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    // get data from here
+    axios(config).then(function (response){
+      //f12 console log
+      console.log(response);
+    }).catch(function(error){
+      console.log(error);
+    });
+    const button: HTMLButtonElement = event.currentTarget;
+    setClickedButton(button.name);
+  };
+  
 
   const handleBuyClick = () => {
     if(healthVerfication){
@@ -137,6 +178,7 @@ export default function InsuranceLogged() {
             <TextField id="Category" label="Category" variant="standard" />
             <TextField id="Keyword" label="Keyword" variant="standard" />
             <Button variant="outlined">Search</Button>
+            <Button variant="outlined" onClick={handleGetDataClick}>Get data (see console log f12)</Button>
           </Box>
             <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><BorderBox value={nowPolicy} onclick={handleBuyClick} ></BorderBox></Box>
               <BuyPolicyDialog value={open} onClose={()=>{setOpen(false)}} onPolicyNumber={addOwnPolicy} onsuccess={() => setOnBuySuccess(true)} onerror={()=>setOnBuyError(true)} policy={nowPolicy}></BuyPolicyDialog>
