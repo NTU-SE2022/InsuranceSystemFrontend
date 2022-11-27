@@ -7,13 +7,57 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField'; 
 import {Box} from '@mui/material';
+
+// interface Policy {
+//     companyname: string;
+//     policyname: string;
+//     category:string;
+//     feature:string[];
+//     coverage:string[];
+//     amount:number;
+//     cost:number
+//   }
+
+// interface Claim {
+//     companyName: string;
+//     policeId: string;
+//     policyName: string;
+//     policyStatus: string;
+//     amount:number;
+//     effectiveDate: string;
+//     paymentMethod: string;
+//     paymentRecord:string;
+//     dueDate:string;
+//   }
+
+function PolicyToClaim(policy,buyAmount){
+    let nowDate = new Date();
+    console.log(nowDate.getFullYear());
+    let nowDueDate = new Date();
+    nowDueDate.setFullYear(nowDate.getFullYear()+1);
+    return(
+        {
+            companyName: policy.companyname,
+            policyId: '1',
+            policyName: policy.policyname,
+            policyStatus: 'available',
+            amount:buyAmount,
+            effectiveDate: nowDate,
+            paymentMethod: policy.cost,
+            paymentRecord: '',
+            dueDate:nowDueDate,
+            money:10,
+        }
+    )
+}
+
 export function BuyPolicyDialog(props){
     const [textInput, setTextInput] = React.useState('')
 
     const handleTextInputChange = event => {
         setTextInput(event.target.value);
     };
-    const EnoughETH = false;
+    const EnoughETH = true;
     const handleClose = () => {
         props.onClose();
     };
@@ -22,12 +66,8 @@ export function BuyPolicyDialog(props){
         if(EnoughETH){
             props.onClose();
             props.onPolicyNumber(
-                {
-                    name:props.policyname,
-                    cost:props.cost,
-                    number:textInput
-                }
-            )
+                PolicyToClaim(props.policy,parseInt(textInput))
+            );
             props.onsuccess();
         }
         else{
@@ -47,14 +87,49 @@ export function BuyPolicyDialog(props){
         </DialogTitle>
         <DialogContent>
             <DialogContentText id="alert-dialog-description">
-                <Box component="p">Policy:{props.policyName}</Box>
-                <Box component="p">Cost:{props.policyCost}</Box>
+                <Box component="p">Policy:{props.policy.policyname}</Box>
+                <Box component="p">Cost:{props.policy.cost}</Box>
                 <TextField id="policyNumber" label="policyNumber" variant="standard" onChange={handleTextInputChange} value={textInput}></TextField>
             </DialogContentText>
         </DialogContent>
         <DialogActions>
             <Button onClick={handleClose}>取消</Button>
             <Button onClick={handlePolicyNumber} autoFocus>OK</Button>
+        </DialogActions>
+    </Dialog>
+    )
+}
+export function ClaimDialog(props){
+    let money = 0;
+    console.log(props)
+    if(props.policy != undefined){
+        money = props.policy.money;
+    }
+    const handleClose = () => {
+        props.onClose();
+    };
+    const handleClick = () =>{
+        props.onsuccess();
+        props.onClose();
+    }
+    return(
+        <Dialog
+        open={props.value}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        >        
+        <DialogTitle id="alert-dialog-title">
+        {"符合理賠資格"}
+        </DialogTitle>
+        <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+                <Box component="p">{`請確認是否申請理賠，若按下確認，保險公司將立即理賠相對應費用 ${money}`}</Box>
+            </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+            <Button onClick={handleClose}>取消</Button>
+            <Button onClick={handleClick} autoFocus>OK</Button>
         </DialogActions>
     </Dialog>
     )

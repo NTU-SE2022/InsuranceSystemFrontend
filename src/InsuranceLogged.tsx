@@ -12,10 +12,6 @@ import TextField from '@mui/material/TextField';
 import { Pagination} from '@mui/material';
 import { BorderBox } from './PolicyCard';
 import {Stack} from '@mui/material';
-import {BuyPolicyDialog,ErrorDialog} from './ShowDialog';
-
-
-
 import axios from "axios";
 
 
@@ -32,6 +28,8 @@ const config = {
 
 
 
+import {BuyPolicyDialog,ErrorDialog,ClaimDialog} from './ShowDialog';
+import { ClaimBox } from './PolicyCard';
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
@@ -54,6 +52,19 @@ interface Policy {
   coverage:string[];
   amount:number;
   cost:number
+}
+
+interface Claim {
+  companyName: string;
+  policyId: string;
+  policyName: string;
+  policyStatus: string;
+  amount:number;
+  effectiveDate: Date;
+  paymentMethod: string;
+  paymentRecord:string;
+  dueDate: Date;
+  money:number;
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -110,12 +121,18 @@ export default function InsuranceLogged() {
   ];
   const [value, setValue] = React.useState(0);
   const [open,setOpen] = React.useState(false);
+  const [openClaim,setOpenClaim] = React.useState(false);
   const [onHealthError,setOnHealthError] = React.useState(false);
+  const [onCertificateError,setOnCertificateError] = React.useState(false);
   const [onBuySuccess, setOnBuySuccess] = React.useState(false);
   const [onBuyError, setOnBuyError] = React.useState(false);
+  const [onClaimSuccess, setOnClaimSuccess] = React.useState(false);
+  // const [onClaimError, setOnClaimError] = React.useState(false);
   const [healthVerfication,sethealthVerfication] = React.useState(true);
+  const [certificateVerfication,setCertificateVerfication] = React.useState(true);
   const [nowPolicy,setNowPolicy] = React.useState(allPolicy[0]);
-  const [ownPolicy,setOwnPolicy] = React.useState<Policy[]>([]);
+  const [ownPolicy,setOwnPolicy] = React.useState<Claim[]>([]);
+  const [nowClaim,setNowClaim] = React.useState(ownPolicy[0]);
 
   // type script
   const config = {
@@ -144,15 +161,36 @@ export default function InsuranceLogged() {
       setOnHealthError(true);
     }
   }
+  const handleClaimClick = () => {
+    if(certificateVerfication){
+      setOpenClaim(true);
+    }
+    else{
+      setOnCertificateError(true);
+    }
+  }
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
-  const addOwnPolicy = (addPolicy: Policy) =>{
+  const addOwnPolicy = (addPolicy: Claim) =>{
     setOwnPolicy([...ownPolicy,addPolicy]);
-    console.log(ownPolicy);
+    console.log(`addPolicy:${addPolicy}`);
+    if(ownPolicy.length == 0){
+      setNowClaim(addPolicy);
+    }
   };
   const handlePolicyChange = (event: React.ChangeEvent<unknown>,page:number) =>{
     setNowPolicy(allPolicy[page-1])
+  }
+  const handleClaimChange = (event: React.ChangeEvent<unknown>,page:number) =>{
+    setNowClaim(ownPolicy[page-1])
+  }
+  const handleBuySuccess = () =>{
+    setOnClaimSuccess(true)
+    const newOwnPolicy = ownPolicy.filter((policy) => policy.policyId !== nowClaim.policyId);
+
+    setOwnPolicy( newOwnPolicy );
+    setNowClaim(newOwnPolicy[0]);
   }
   return (
     <Container>
@@ -191,6 +229,28 @@ export default function InsuranceLogged() {
         </TabPanel>
         <TabPanel value={value} index={1}>
           Own Policies
+          <Box
+            component="form"
+            sx={{
+              '& > :not(style)': { m: 1, width: '25ch' },
+            }}
+            noValidate
+            autoComplete="off"
+          >
+            <TextField id="CompanyName" label="CompanyName" variant="standard" />
+            <TextField id="PolicyID" label="PolicyID" variant="standard" />
+            <TextField id="PolicyName" label="PolicyName" variant="standard" />
+            <TextField id="PolicyState" label="PolicyState" variant="standard" />
+            <TextField id="Keyword" label="Keyword" variant="standard" />
+            <Button variant="outlined">Search</Button>
+          </Box>
+          <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><ClaimBox value={nowClaim} onclick={handleClaimClick} ></ClaimBox></Box>
+          <ClaimDialog value={openClaim} onClose={()=>{setOpenClaim(false)}} onsuccess={ handleBuySuccess } policy={nowClaim}></ClaimDialog>
+          <ErrorDialog value={onClaimSuccess} title={'申請理賠成功！'} context={`保險公司已支付 ${1} ETH到您戶頭。`} onClose={()=>{ setOnClaimSuccess(false)}}></ErrorDialog>
+          <ErrorDialog value={onCertificateError} title={'不符合資格'} context={'並無相關診斷證明可申請理賠，若結果不符預期請洽詢保險公司。'} onClose={()=>{setOnCertificateError(false)}}></ErrorDialog>
+          <Stack alignItems="center">
+              <Pagination count={ownPolicy.length} variant="outlined" shape="rounded" sx={{margin: "auto"}} onChange={handleClaimChange}/>
+            </Stack>
         </TabPanel>
       </Box>
     </Container>
