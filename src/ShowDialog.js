@@ -38,7 +38,7 @@ function PolicyToClaim(policy,buyAmount){
     return(
         {
             companyName: policy.companyname,
-            policyId: '1',
+            policyId: policy.policyname,
             policyName: policy.policyname,
             policyStatus: 'available',
             amount:buyAmount,
@@ -103,7 +103,7 @@ export function ClaimDialog(props){
     let money = 0;
     console.log(props)
     if(props.policy != undefined){
-        money = props.policy.money;
+        money = props.policy.money*props.policy.amount;
     }
     const handleClose = () => {
         props.onClose();
@@ -111,6 +111,7 @@ export function ClaimDialog(props){
     const handleClick = () =>{
         props.onsuccess();
         props.onClose();
+        props.onSetMoney();
     }
     return(
         <Dialog
@@ -124,7 +125,7 @@ export function ClaimDialog(props){
         </DialogTitle>
         <DialogContent>
             <DialogContentText id="alert-dialog-description">
-                <Box component="p">{`請確認是否申請理賠，若按下確認，保險公司將立即理賠相對應費用 ${money}`}</Box>
+                <Box component="p">{`請確認是否申請理賠，若按下確認，保險公司將立即理賠相對應費用 ${money} ETH`}</Box>
             </DialogContentText>
         </DialogContent>
         <DialogActions>

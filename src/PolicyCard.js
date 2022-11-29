@@ -104,6 +104,7 @@ function ClaimBoxContent(props){
         <Box flex={1} sx={{height:'100%',textAlign:'left' ,overflow:"auto"}}>
         <Box component="p">Company Name:{props.value.companyName}</Box>
         <Box component="p">Policy ID:{props.value.policyId}</Box>
+        <Box component="p">Policy Name:{props.value.policyName}</Box>
         <Box component="p">Policy Status:{props.value.policyStatus}</Box>
         <Box component='p'>計畫數:{props.value.amount.toString()}</Box>
         <Box component='p'>Policy Effective Date:{props.value.effectiveDate.toString()}</Box>
