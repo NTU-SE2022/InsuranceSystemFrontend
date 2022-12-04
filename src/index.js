@@ -29,7 +29,7 @@ ReactDOM.createRoot(document.querySelector("#root")).render(
                 <Routes>
                     {/* <Route exact path="/" element={ loggedIn ? ( <Insurance />): ( <SignIn /> )}/> */}
                     <Route exact path="/" element={<Insurance/>}/>
-                    <Route exact path="/connect" element={<InsuranceLogged/>}/>
+                    <Route path="/connect" element={<InsuranceLogged/>}/>
                 </Routes>
         </Router> 
     </Provider>   

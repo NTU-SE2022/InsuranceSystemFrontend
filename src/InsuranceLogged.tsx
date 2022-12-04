@@ -13,9 +13,9 @@ import { Pagination} from '@mui/material';
 import { BorderBox } from './PolicyCard';
 import {Stack} from '@mui/material';
 import axios from "axios";
-
-
-
+import useEthereum from './WEB3/useEthereum';
+import { useLocation } from "react-router-dom";
+import { useNavigate } from 'react-router';
 const config = {
   baseURL: "http://localhost:3000/data/test.json",
 }
@@ -30,6 +30,7 @@ const config = {
 
 import {BuyPolicyDialog,ErrorDialog,ClaimDialog} from './ShowDialog';
 import { ClaimBox } from './PolicyCard';
+import { useParams } from 'react-router-dom';
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
@@ -96,35 +97,58 @@ function a11yProps(index: number) {
 
 
 
-export default function InsuranceLogged() {
+export default function InsuranceLogged(props:any) {
+
+  const {
+    isMetaMaskInstalled,
+    provider,
+    accounts,
+    web3,
+    enable,
+    disable
+  } = useEthereum();
+  // const { address } = useParams();
   // type script
   const config = {
-    baseURL: "http://localhost:3000/data/test.json",
+    baseURL: "https://insurance-back.host.chillmonkey.com.tw/api/policies",
+    // baseURL:"http://localhost:3000/data/test.json"
   }
   const configOwnPolicy = {
-    baseURL: "http://localhost:3000/data/ownpolicy.json",
+    // baseURL: "https://insurance-back.host.chillmonkey.com.tw/api/policies",
+    baseURL:"http://localhost:3000/data/ownpolicy.json"
   }
   const [isLoading, setLoading] = React.useState(true);
   const [allPolicy, setAllPolicy] = React.useState<Policy[]>([]);
   const [nowPolicy,setNowPolicy] = React.useState<Policy>(allPolicy[0]);
   const [ownPolicy,setOwnPolicy] = React.useState<Claim[]>([]);
+
+  React.useEffect(() =>  {
+    enable()
+  },[])
+
   React.useEffect(() => {
     axios(config).then(response => {
       setAllPolicy(response.data.response.policy);
-      setNowPolicy(response.data.response.policy[0]);
       setLoading(false);
     }).catch(error =>{
       console.log(error);
     });
+  }, []);
+  React.useEffect(()=>{
     axios(configOwnPolicy).then(response =>{
       setOwnPolicy(response.data.response.policy);
-      if(response.data.response.policy.length != 0){
-        setNowClaim(response.data.response.policy[0]);
-      }
     }).catch(error =>{
       console.log(error);
     });
-  }, []);
+  },[]);
+
+  React.useEffect(()=>{
+    setNowPolicy(allPolicy[0]);
+  },[allPolicy])
+
+  React.useEffect(()=>{
+    setNowClaim(ownPolicy[0]);
+  },[ownPolicy])
 
   const [value, setValue] = React.useState(0);
   const [open,setOpen] = React.useState(false);
@@ -155,8 +179,11 @@ export default function InsuranceLogged() {
   //   const button: HTMLButtonElement = event.currentTarget;
   //   setClickedButton(button.name);
   // };
-  
-
+  const nav = useNavigate()
+  const logout = () => {
+    disable();
+    nav('/');
+  }
   const handleBuyClick = () => {
     if(healthVerfication){
       setOpen(true);
@@ -239,6 +266,7 @@ export default function InsuranceLogged() {
             <TextField id="Category" label="Category" variant="standard" />
             <TextField id="Keyword" label="Keyword" variant="standard" />
             <Button variant="outlined">Search</Button>
+            <Button style={{ marginLeft: '1rem' }} variant="outlined" color="warning" disabled={!web3} onClick={() => logout()}>Disconnect</Button>
             {/* <Button variant="outlined" onClick={handleGetDataClick}>Get data (see console log f12)</Button> */}
           </Box>
             <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><BorderBox value={nowPolicy} onclick={handleBuyClick} ></BorderBox></Box>
