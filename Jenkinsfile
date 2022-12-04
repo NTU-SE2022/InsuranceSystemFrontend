@@ -9,8 +9,7 @@ pipeline {
             steps {
                 sh 'node --version'
                 sh 'cd /opt/code && ls -al'
-                sh 'chown -R 111:115 "/.npm"'
-                sh 'npm cache clean --force && rm package-lock.json && npm install'
+                sh 'npm cache clean --force && rm package-lock.json && npm install --prefix ./'
                 sh 'npm run build'
             }
         }
