@@ -10,7 +10,7 @@ pipeline {
                 sh 'node --version'
                 sh 'cd /opt/code && ls -al'
                 sh 'export npm_config_cache=/tmp'
-                sh 'npm cache clean --force && rm package-lock.json && npm install'
+                sh 'npm cache clean --force && rm package-lock.json && npm install --prefix /tmp'
                 sh 'npm run build'
             }
         }
