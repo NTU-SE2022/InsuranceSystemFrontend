@@ -8,7 +8,9 @@ pipeline {
         stage('build') {
             steps {
                 sh 'node --version'
+                sh 'cd /opt/code'
                 sh 'npm install'
+                sh 'npm run build'
             }
         }
     }
