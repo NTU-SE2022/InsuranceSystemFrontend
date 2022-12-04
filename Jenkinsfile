@@ -9,6 +9,7 @@ pipeline {
             steps {
                 sh 'node --version'
                 sh 'cd /opt/code && ls -al'
+                sh 'npm install'
                 sh 'npm run build'
             }
         }
