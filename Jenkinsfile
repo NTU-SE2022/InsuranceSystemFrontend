@@ -9,7 +9,8 @@ pipeline {
             steps {
                 sh 'node --version'
                 sh 'cd /opt/code && ls -al'
-                sh 'npm cache clean --force && rm package-lock.json && npm install --prefix ./'
+                sh 'mkdir /opt/nodecache && export npm_config_cache=/opt/nodecache'
+                sh 'npm cache clean --force && rm package-lock.json && npm install'
                 sh 'npm run build'
             }
         }
