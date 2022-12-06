@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { faUserDoctor } from '@fortawesome/free-solid-svg-icons';
 
-const bull = (
+const bull = () => (
   <Box
     component="span"
     sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
@@ -18,7 +18,7 @@ const bull = (
   </Box>
 );
 
-const card = (
+const card = () => (
   <React.Fragment>
     <CardContent>
       <Typography variant="h5" component="div">
@@ -37,10 +37,12 @@ const card = (
   </React.Fragment>
 );
 
-export default function OutlinedCard() {
+const OutlinedCard = () => {
   return (
     <Box sx={{ minWidth: 275 }}>
       <Card variant="outlined">{card}</Card>
     </Box>
   );
 }
+
+export default OutlinedCard;

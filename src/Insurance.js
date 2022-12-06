@@ -18,9 +18,7 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-
-
-export default function Insurance() {
+const Insurance = () => {
   return (
     <Container maxWidth="sx">
     <Box sx={{flexGrow:1, margin: 10}}>
@@ -35,3 +33,5 @@ export default function Insurance() {
     </Container>
   );
 }
+
+export default Insurance; 

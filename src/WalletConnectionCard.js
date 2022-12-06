@@ -21,7 +21,7 @@ const CONNECT_TEXT = 'Welcome Back to Dino Club!';
 const CONNECTED_TEXT = 'Connected';
 // 當 USER 已經連接到 Ethereum 帳戶
 
-const bull = (
+const bull = () => (
   <Box
     component="span"
     sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
@@ -182,13 +182,13 @@ const LoginBox = () =>{
 //   );
 // }
 
-
-
-export default function OutlinedCard() {
+const OutlinedCard = () => {
   return (
     <Box sx={{ minWidth: 275 }}>
       {/* <Card variant="outlined">{card}</Card> */}
       <LoginBox></LoginBox>
     </Box>
   );
-}
+};
+
+export default OutlinedCard;

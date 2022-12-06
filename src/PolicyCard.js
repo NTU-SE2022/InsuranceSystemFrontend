@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Box,Button} from '@mui/material';
-export function BorderBox(props){
-    
+
+const BorderBox = (props) => {
     return(
         <Box
         sx={{
@@ -31,7 +31,7 @@ export function BorderBox(props){
         </Box>
         </Box>
     )
-}
+};
 
 function BorderBoxContent(props){
     if (props.value === undefined){
@@ -65,7 +65,7 @@ function BorderBoxContent(props){
 //     dueDate:string;
 //   }
 
-export function ClaimBox(props){
+const ClaimBox = (props) => {
     if (!props.value){
         return(
             <Box></Box>
@@ -99,9 +99,9 @@ export function ClaimBox(props){
         </Box>
         </Box>
     )
-}
+};
 
-function ClaimBoxContent(props){
+const ClaimBoxContent = (props) => {
     if (props.value === undefined){
         return
     };
@@ -128,3 +128,7 @@ function ClaimBoxContent(props){
         </Box>
     )
 }
+
+export {
+    BorderBox, ClaimBox
+};

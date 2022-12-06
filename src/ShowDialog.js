@@ -51,7 +51,7 @@ function PolicyToClaim(policy,buyAmount){
     )
 }
 
-export function BuyPolicyDialog(props){
+const BuyPolicyDialog = (props) => {
     const [textInput, setTextInput] = React.useState('')
 
     const handleTextInputChange = event => {
@@ -100,7 +100,8 @@ export function BuyPolicyDialog(props){
     </Dialog>
     )
 }
-export function ClaimDialog(props){
+
+const ClaimDialog = (props) => {
     let money = 0;
     console.log(props)
     if(props.policy != undefined){
@@ -136,9 +137,7 @@ export function ClaimDialog(props){
     )
 }
 
-export function ErrorDialog(props){
-
-  
+const ErrorDialog = (props) => {
     const handleClose = () => {
         props.onClose();
     };
@@ -164,10 +163,18 @@ export function ErrorDialog(props){
     )
 }
 
-export function SuccessDialog(){
+const SuccessDialog = () => {
 
 }
 
-export function FailDialog(){
+const FailDialog = () => {
 
+}
+
+export {
+    BuyPolicyDialog,
+    ClaimDialog,
+    ErrorDialog,
+    SuccessDialog,
+    FailDialog
 }

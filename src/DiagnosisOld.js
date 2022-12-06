@@ -14,7 +14,7 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons';
 
 
 
-function DiagnosisOld() {
+const DiagnosisOld = () => {
   return (
     <Container>
     <Row>

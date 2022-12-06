@@ -11,7 +11,7 @@ import './App.css';
 
 // const Users = () => <span>Users</span>;
 
-function App() {
+const App = () => {
   return (
     <div className="App">
       <header className="App-header">

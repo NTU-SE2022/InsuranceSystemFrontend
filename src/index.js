@@ -37,7 +37,7 @@ export const userWallet = React.createContext()
 // } = useEthereum();
 // Importing the Bootstrap CSS
 
-const App = () =>{
+const App = () => {
     return(
         <Provider store={store}>
             <userWallet.Provider value={useEthereum()}>
@@ -60,4 +60,4 @@ ReactDOM.createRoot(document.querySelector("#root")).render(
     //     <Diagnosis />
     //   </StyledEngineProvider>
     // </React.StrictMode>
-  );
+);
