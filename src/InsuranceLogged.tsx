@@ -14,8 +14,11 @@ import { BorderBox } from './PolicyCard';
 import {Stack} from '@mui/material';
 import axios from "axios";
 import useEthereum from './WEB3/useEthereum';
-import { useLocation } from "react-router-dom";
+import { userWallet } from '.';
 import { useNavigate } from 'react-router';
+import Web3function from './WEB3/Web3function';
+import abijson from './WEB3/abi.json';
+import getPolicy from './store/policy';
 const config = {
   baseURL: "http://localhost:3000/data/test.json",
 }
@@ -31,6 +34,7 @@ const config = {
 import {BuyPolicyDialog,ErrorDialog,ClaimDialog} from './ShowDialog';
 import { ClaimBox } from './PolicyCard';
 import { useParams } from 'react-router-dom';
+import Web3 from 'web3';
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
@@ -38,6 +42,11 @@ const Item = styled(Paper)(({ theme }) => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
   }));
+
+  interface Web3CardParam {
+    web3: Web3;
+    accounts: string[]
+}
   
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -46,13 +55,14 @@ interface TabPanelProps {
 }
 
 interface Policy {
-  companyname: string;
-  policyname: string;
-  category:string;
-  feature:string[];
-  coverage:string[];
+  companyName: string;
+  policyName: string;
+  symbol:string;
+  description:string;
+  maxQuantity:number;
   amount:number;
-  cost:number
+  price:number;
+  address:string;
 }
 
 interface Claim {
@@ -66,6 +76,10 @@ interface Claim {
   paymentRecord:string;
   dueDate: Date;
   money:number;
+}
+
+interface ContractAddress {
+  address: string;
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -106,12 +120,14 @@ export default function InsuranceLogged(props:any) {
     web3,
     enable,
     disable
-  } = useEthereum();
+  } = React.useContext(userWallet);
+
+
   // const { address } = useParams();
   // type script
   const config = {
-    baseURL: "https://insurance-back.host.chillmonkey.com.tw/api/policies",
-    // baseURL:"http://localhost:3000/data/test.json"
+    // baseURL: "https://insurance-back.host.chillmonkey.com.tw/api/policies",
+    baseURL:"http://localhost:3000/data/test.json"
   }
   const configOwnPolicy = {
     // baseURL: "https://insurance-back.host.chillmonkey.com.tw/api/policies",
@@ -119,31 +135,48 @@ export default function InsuranceLogged(props:any) {
   }
   const [isLoading, setLoading] = React.useState(true);
   const [allPolicy, setAllPolicy] = React.useState<Policy[]>([]);
+  const [allPolicyAddress, setAllPolicyAddress] = React.useState<ContractAddress[]>([]);
   const [nowPolicy,setNowPolicy] = React.useState<Policy>(allPolicy[0]);
   const [ownPolicy,setOwnPolicy] = React.useState<Claim[]>([]);
+  const [contractConnect ,setContractConnect] = React.useState(false);
 
-  React.useEffect(() =>  {
-    enable()
-  },[])
+  // React.useEffect(() =>  {
+  //   console.log(accounts)
+  // },[])
 
   React.useEffect(() => {
     axios(config).then(response => {
-      setAllPolicy(response.data.response.policy);
+      setAllPolicyAddress(response.data.response.policy);
       setLoading(false);
     }).catch(error =>{
       console.log(error);
     });
   }, []);
   React.useEffect(()=>{
-    axios(configOwnPolicy).then(response =>{
-      setOwnPolicy(response.data.response.policy);
-    }).catch(error =>{
-      console.log(error);
-    });
-  },[]);
+    if(allPolicyAddress.length != 0){
+      connectContract(allPolicyAddress[0].address)
+      setContractConnect(true);
+    }
+  },[allPolicyAddress]);
 
   React.useEffect(()=>{
+    getAllPolicy
+  },[contractConnect])
+  const {connectContract,disconnectContract,contractCall} = Web3function({web3:web3,accounts:accounts,abi:abijson})
+
+  const getAllPolicy = () => {
+    allPolicyAddress.forEach((policyAddress:ContractAddress)=>{
+          console.log(policyAddress.address);
+          
+          allPolicy.push(
+            getPolicy(connectContract,contractCall,policyAddress.address)
+          )
+        })
+    console.log(allPolicy)
+  }
+  React.useEffect(()=>{
     setNowPolicy(allPolicy[0]);
+    // connectContract(allPolicyAddress[0].address)
   },[allPolicy])
 
   React.useEffect(()=>{
@@ -250,6 +283,8 @@ export default function InsuranceLogged(props:any) {
             <Tab label="All Policies" {...a11yProps(0)} />
             <Tab label="Own Policies" {...a11yProps(1)} />
           </Tabs>
+          <Button style={{ marginLeft: '1rem' }} variant="outlined" color="warning" disabled={!web3} onClick={() => logout()}>Disconnect</Button>
+          <Button style={{ marginLeft: '1rem' }} variant="outlined" color="warning" disabled={!web3} onClick={() => getAllPolicy()}>TEST</Button>
         </Box>
         <TabPanel value={value} index={0}>
           All Available Policies
@@ -266,13 +301,13 @@ export default function InsuranceLogged(props:any) {
             <TextField id="Category" label="Category" variant="standard" />
             <TextField id="Keyword" label="Keyword" variant="standard" />
             <Button variant="outlined">Search</Button>
-            <Button style={{ marginLeft: '1rem' }} variant="outlined" color="warning" disabled={!web3} onClick={() => logout()}>Disconnect</Button>
+            
             {/* <Button variant="outlined" onClick={handleGetDataClick}>Get data (see console log f12)</Button> */}
           </Box>
             <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><BorderBox value={nowPolicy} onclick={handleBuyClick} ></BorderBox></Box>
               <BuyPolicyDialog value={open} onClose={()=>{setOpen(false)}} onPolicyNumber={addOwnPolicy} onsuccess={() => setOnBuySuccess(true)} onerror={()=>setOnBuyError(true)} policy={nowPolicy}></BuyPolicyDialog>
-              <ErrorDialog value={onBuySuccess} title={'購買成功！'} context={`成功購買${nowPolicy.amount}單位！已從帳戶扣款${nowPolicy.amount * nowPolicy.cost}ETH。`} onClose={()=>{ setOnBuySuccess(false)}} ></ErrorDialog>
-              <ErrorDialog value={onBuyError} title={'購買失敗！'} context={`你帳戶餘額低於${nowPolicy.amount * nowPolicy.cost}ETH，請確認帳戶餘額充足後再試一次。`} onClose={()=>{setOnBuyError(false)}}></ErrorDialog>
+              <ErrorDialog value={onBuySuccess} title={'購買成功！'} context={`成功購買${nowPolicy.amount}單位！已從帳戶扣款${nowPolicy.amount * nowPolicy.price}ETH。`} onClose={()=>{ setOnBuySuccess(false)}} ></ErrorDialog>
+              <ErrorDialog value={onBuyError} title={'購買失敗！'} context={`你帳戶餘額低於${nowPolicy.amount * nowPolicy.price}ETH，請確認帳戶餘額充足後再試一次。`} onClose={()=>{setOnBuyError(false)}}></ErrorDialog>
               <ErrorDialog value={onHealthError} title={'不符合資格'} context={'你的健康狀況並不符合加保資格！請參考其他保單，或洽保險公司諮詢。'} onClose={()=>{setOnHealthError(false)}}></ErrorDialog>
             <Stack alignItems="center">
               <Pagination count={allPolicy.length} variant="outlined" shape="rounded" sx={{margin: "auto"}} onChange={handlePolicyChange}/>

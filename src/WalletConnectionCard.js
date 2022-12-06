@@ -9,9 +9,9 @@ import Typography from '@mui/material/Typography';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWallet } from '@fortawesome/free-solid-svg-icons';
 import useEthereum from './WEB3/useEthereum';
-import { Redirect } from 'react-router';
-import { UseEthereumReturns } from './WEB3/useEthereum';
+import { userWallet } from '.';
 import { useNavigate } from 'react-router';
+
 // import useMetaMask from './useMetaMask';
 
 const ONBOARD_TEXT = 'Click here to install MetaMask!';
@@ -55,23 +55,35 @@ const LoginButton = ({
 }
 
 const LoginBox = () =>{
-    const {
-      isMetaMaskInstalled,
-      provider,
-      accounts,
-      web3,
-      enable,
-      disable
-  } = useEthereum();
+  //   const {
+  //     isMetaMaskInstalled,
+  //     provider,
+  //     accounts,
+  //     web3,
+  //     enable,
+  //     disable
+  // } = useEthereum();
+  console.log(React.useContext(userWallet));
+  const {
+    isMetaMaskInstalled,
+    provider,
+    accounts,
+    web3,
+    enable,
+    disable
+} = React.useContext(userWallet);
+  // const wallet = useEthereum() 
   const navigate = useNavigate();
   React.useEffect(()=>{
     if(!accounts.length == 0){
       // navigate('/connect',{state:{provider:provider,accounts:accounts,web3:web3,disable:disable}})
-      navigate('/connect',{ state: { accounts:accounts } })
+      console.log(`Wallet:${accounts}`)
+      navigate('/connect')
+      
     }
   },[accounts]);
   return(
-  <React.Fragment>
+    <React.Fragment>
     <CardContent>
       <Typography variant="h5" component="div">
         <FontAwesomeIcon icon={faWallet} fontSize="100px"/>

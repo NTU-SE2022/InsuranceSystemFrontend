@@ -1,22 +1,13 @@
-{"response":{
-    "policy":[
-        {
-            "companyname": "1",
-            "policyname": "1",
-            "category":"1",
-            "feature":["1","1"],
-            "coverage":["1","1"],
-            "amount":1,
-            "cost":1
-        },
-        {
-            "companyname": "2",
-            "policyname": "2",
-            "category":"2",
-            "feature":["2","2"],
-            "coverage":["2","2"],
-            "amount":1,
-            "cost":2
-        }
-    ]
-}}
+{
+	"status": 200,
+	"response": {
+		"policy": [
+			{
+				"address": "0x7Fa0b3174bDFb34B47451490f0B10D405e4Bc520"
+			},
+			{
+				"address": "0x7Fa0b3174bDFb34B47451490f0B10D405e4Bc520"
+			}
+		]
+	}
+}
