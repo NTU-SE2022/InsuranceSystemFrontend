@@ -63,18 +63,19 @@ export function BuyPolicyDialog(props){
     };
 
     const handlePolicyNumber = () =>{
+        
         if(EnoughETH){
             props.onClose();
-            props.onPolicyNumber(
-                PolicyToClaim(props.policy,parseInt(textInput))
-            );
+            props.handleBuyPolicy(parseInt(textInput),buyETH);
             props.onsuccess();
         }
         else{
             props.onerror();
         }
     }
-
+    const buyETH = (res) => {
+        console.log(res)
+    }
     return(
         <Dialog
         open={props.value}
@@ -87,8 +88,8 @@ export function BuyPolicyDialog(props){
         </DialogTitle>
         <DialogContent>
             <DialogContentText id="alert-dialog-description">
-                <Box component="p">Policy:{props.policy.policyname}</Box>
-                <Box component="p">Cost:{props.policy.cost}</Box>
+                <Box component="p">Policy:{props.policy.policyName}</Box>
+                <Box component="p">Cost:{props.policy.price}</Box>
                 <TextField id="policyNumber" label="policyNumber" variant="standard" onChange={handleTextInputChange} value={textInput}></TextField>
             </DialogContentText>
         </DialogContent>
@@ -111,7 +112,6 @@ export function ClaimDialog(props){
     const handleClick = () =>{
         props.onsuccess();
         props.onClose();
-        props.onSetMoney();
     }
     return(
         <Dialog

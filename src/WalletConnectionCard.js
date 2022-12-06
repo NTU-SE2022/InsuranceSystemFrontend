@@ -63,7 +63,6 @@ const LoginBox = () =>{
   //     enable,
   //     disable
   // } = useEthereum();
-  console.log(React.useContext(userWallet));
   const {
     isMetaMaskInstalled,
     provider,
@@ -79,7 +78,6 @@ const LoginBox = () =>{
       // navigate('/connect',{state:{provider:provider,accounts:accounts,web3:web3,disable:disable}})
       console.log(`Wallet:${accounts}`)
       navigate('/connect')
-      
     }
   },[accounts]);
   return(

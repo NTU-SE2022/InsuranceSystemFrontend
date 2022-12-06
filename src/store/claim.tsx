@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import { BorderBox } from '../PolicyCard';
 import ContractActions from '../WEB3/ContractActions'
 import {BuyPolicyDialog,ErrorDialog,ClaimDialog} from '../ShowDialog';
+import {ClaimBox} from '../PolicyCard';
 
 interface Policy {
     companyName: string;
@@ -107,7 +108,7 @@ const getPolicy = (contractCall:({
 
 export default getPolicy;
 
-export const Policy = ({address}:PolicyAddress) => {
+export const Claim = ({address}:PolicyAddress) => {
     const {
         isMetaMaskInstalled,
         provider,
@@ -132,10 +133,10 @@ export const Policy = ({address}:PolicyAddress) => {
             getPolicyName();
             getPolicyDescription();
             getPolicySymbol();
-            getPolicyMaxQuantity();
+            // getPolicyMaxQuantity();
             getPolicyPrice();
-            getHealthVerfication();
-            getConsiderSymptoms();
+            getPolicyAmount();
+            getCertificateVerfication();
         }
     },[connect])
     const [symbol,setSymbol] = React.useState('');
@@ -145,13 +146,12 @@ export const Policy = ({address}:PolicyAddress) => {
     const [description,setDescription] = React.useState('');
     const [companyName,setCompanyName] = React.useState('');
     const [policyName,setPolicyName] = React.useState('');
-    const [considerSymptom, setConsiderSymptom] = React.useState([]);
 
-    const [healthVerfication,setHealthVerfication] = React.useState(true);
-    const [onHealthError,setOnHealthError] = React.useState(false);
+    const [onCertificateError,setOnCertificateError] = React.useState(false);
     const [open,setOpen] = React.useState(false);
-    const [onBuySuccess, setOnBuySuccess] = React.useState(false);
-    const [onBuyError, setOnBuyError] = React.useState(false);
+    const [onClaimSuccess, setOnClaimSuccess] = React.useState(false);
+    const [onClaimError, setOnClaimError] = React.useState(false);
+    const [certificateVerfication,setCertificateVerfication] = React.useState(false);
 
     const getCompanyName = () => {
         contractCall({
@@ -204,6 +204,16 @@ export const Policy = ({address}:PolicyAddress) => {
         });
     };
 
+    const getPolicyAmount = () => {
+        contractCall({
+            method: 'balanceOf',
+            param: accounts,
+            callback: (res) => {
+                setAmount(res);
+            }
+        });
+    };
+
     const getPolicyMaxQuantity = () => {
         contractCall({
             method: 'maxQuantity',
@@ -214,45 +224,27 @@ export const Policy = ({address}:PolicyAddress) => {
         });
     };
 
-    const getHealthVerfication = () => {
+    const getCertificateVerfication = () => {
         contractCall({
-            method: 'eligibilityVerificationForPurchase',
+            method: 'eligibilityVerificationForClaim',
             param: [],
             callback: (res) => {
-                // setHealthVerfication(res);
-                console.log(res)
-            }
-        });
-    }
-
-    const getConsiderSymptoms = () => {
-        contractCall({
-            method: 'getConsideredSymptoms',
-            param: [],
-            callback: (res) => {
-                console.log(res);
-                setConsiderSymptom(res);
+                setCertificateVerfication(res);
                 // console.log(res)
             }
         });
     }
 
-    const buyPolicy = (amount:number,cbfunction:(res:any) => {}) => {
-        setAmount(amount);
+    const makeClaim = (cbfunction:(res:any) => {}) => {
         contractCall({
-            method: 'mintPolicy',
-            param: [amount],
+            method: 'claim',
+            param: [],
             callback: cbfunction
         });
     }
 
-    const handleBuyClick = () => {
-        if(healthVerfication){
-          setOpen(true);
-        }
-        else{
-          setOnHealthError(true);
-        }
+    const handleBuySuccess = () => {
+        setOnClaimSuccess(true)
       }
 
     
@@ -264,18 +256,31 @@ export const Policy = ({address}:PolicyAddress) => {
         maxQuantity:maxQuantity,
         amount:amount,
         price:price,
-        considerSymptom:considerSymptom,
         address:address
     }
 
+    const handleClaimClick = () => {
+        if(certificateVerfication){
+          setOpen(true);
+        }
+        else{
+          setOnCertificateError(true);
+        }
+      }
+
     return(
-        <Box>
-        <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><BorderBox value={policy} onclick={handleBuyClick} ></BorderBox></Box>
-        <BuyPolicyDialog value={open} onClose={()=>{setOpen(false)}} onsuccess={() => setOnBuySuccess(true)} handleBuyPolicy = {buyPolicy} onerror={()=>setOnBuyError(true)} policy = {policy}></BuyPolicyDialog>
-        <ErrorDialog value={onBuySuccess} title={'購買成功！'} context={`成功購買${amount}單位！已從帳戶扣款${amount * price}ETH。`} onClose={()=>{ setOnBuySuccess(false)}} ></ErrorDialog>
-        <ErrorDialog value={onBuyError} title={'購買失敗！'} context={`你帳戶餘額低於${amount * price}ETH，請確認帳戶餘額充足後再試一次。`} onClose={()=>{setOnBuyError(false)}}></ErrorDialog>
-        <ErrorDialog value={onHealthError} title={'不符合資格'} context={'你的健康狀況並不符合加保資格！請參考其他保單，或洽保險公司諮詢。'} onClose={()=>{setOnHealthError(false)}}></ErrorDialog>
-        </Box>
+
+        <div>
+            { 
+                amount != 0  &&
+                <>
+                <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><ClaimBox value={policy} onclick={handleClaimClick} ></ClaimBox></Box>
+                <ClaimDialog value={open} onClose={()=>{setOpen(false)}} onsuccess={ handleBuySuccess } policy={policy} onClaim = {makeClaim}></ClaimDialog>
+                <ErrorDialog value={onClaimSuccess} title={'申請理賠成功！'} context={`保險公司已支付 ${amount*price} ETH到您戶頭。`} onClose={()=>{ setOnClaimSuccess(false)}}></ErrorDialog>
+                <ErrorDialog value={onCertificateError} title={'不符合資格'} context={'並無相關診斷證明可申請理賠，若結果不符預期請洽詢保險公司。'} onClose={()=>{setOnCertificateError(false)}}></ErrorDialog>
+                </>
+            }
+        </div>
     )
     
 }

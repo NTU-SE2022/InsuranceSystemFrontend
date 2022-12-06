@@ -39,11 +39,16 @@ function BorderBoxContent(props){
     };
     return(
         <Box flex={1} sx={{height:'100%',textAlign:'left' ,overflow:"auto"}}>
-        <Box component="p">Company Name:{props.value.companyname}</Box>
-        <Box component="p">Policy Name:{props.value.policyname}</Box>
-        <Box component="p">Category:{props.value.category}</Box>
+        <Box component="p">Company Name:{props.value.companyName}</Box>
+        <Box component="p">Policy Name:{props.value.policyName}</Box>
+        <Box component="p">Symbol:{props.value.symbol}</Box>
+        <Box component="p">Policy Description:{props.value.description}</Box>
+        <Box component="p">Price:{props.value.price}</Box>
+        <Box component="p">MaxQuantity:{props.value.maxQuantity}</Box>
+        <Box component='p'>Feature:{props.value.considerSymptom.map((policy=>(<Box component='li'>{policy}</Box>)))}</Box>
+        {/* <Box component="p">Category:{props.value.category}</Box>
         <Box component='p'>Feature:{props.value.feature.map((policy=>(<Box component='li'>{policy}</Box>)))}</Box>
-        <Box component='p'>Coverage:{props.value.coverage.map((policy=>(<Box component='li'>{policy}</Box>)))}</Box>
+        <Box component='p'>Coverage:{props.value.coverage.map((policy=>(<Box component='li'>{policy}</Box>)))}</Box> */}
         </Box>
     )
 }
@@ -101,16 +106,25 @@ function ClaimBoxContent(props){
         return
     };
     return(
+        // <Box flex={1} sx={{height:'100%',textAlign:'left' ,overflow:"auto"}}>
+        // <Box component="p">Company Name:{props.value.companyName}</Box>
+        // <Box component="p">Policy ID:{props.value.policyId}</Box>
+        // <Box component="p">Policy Name:{props.value.policyName}</Box>
+        // <Box component="p">Policy Status:{props.value.policyStatus}</Box>
+        // <Box component='p'>計畫數:{props.value.amount.toString()}</Box>
+        // <Box component='p'>Policy Effective Date:{props.value.effectiveDate.toString()}</Box>
+        // <Box component="p">Payment Method:{props.value.paymentMethod}</Box>
+        // <Box component="p">Payment Record:{props.value.paymentRecord}</Box>
+        // <Box component="p">Due Date:{props.value.dueDate.toString()}</Box>
+        // </Box>
         <Box flex={1} sx={{height:'100%',textAlign:'left' ,overflow:"auto"}}>
         <Box component="p">Company Name:{props.value.companyName}</Box>
-        <Box component="p">Policy ID:{props.value.policyId}</Box>
         <Box component="p">Policy Name:{props.value.policyName}</Box>
-        <Box component="p">Policy Status:{props.value.policyStatus}</Box>
-        <Box component='p'>計畫數:{props.value.amount.toString()}</Box>
-        <Box component='p'>Policy Effective Date:{props.value.effectiveDate.toString()}</Box>
-        <Box component="p">Payment Method:{props.value.paymentMethod}</Box>
-        <Box component="p">Payment Record:{props.value.paymentRecord}</Box>
-        <Box component="p">Due Date:{props.value.dueDate.toString()}</Box>
+        <Box component="p">Symbol:{props.value.symbol}</Box>
+        <Box component="p">Policy Description:{props.value.description}</Box>
+        <Box component="p">Price:{props.value.price}</Box>
+        <Box component="p">Amount:{props.value.amount}</Box>
+
         </Box>
     )
 }

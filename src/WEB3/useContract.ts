@@ -25,14 +25,12 @@ const useContract = ({
         address,
         web3
     }: UseContractParams = {}) => {
-        
         setContract(
             ( abi && address && web3 ) ? new web3.eth.Contract(
                 abi,
                 address
             ) : null
         );
-        console.log(`address`);
     };
 
     return {

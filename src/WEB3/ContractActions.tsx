@@ -27,11 +27,10 @@ const ContractActions = ({
         param = [],
         callback
     }: ContractCallParam) => {
-        console.log(contract);
         if (contract) {
-            console.log(typeof contract.methods[method]);
             if (typeof contract.methods[method] === 'function') {
-                contract.methods[method].apply(this, param).call().then(callback);
+                // console.log(accounts[0])
+                contract.methods[method].apply(this, param).call({"from": accounts[0]}).then(callback);
             }
         }
     };

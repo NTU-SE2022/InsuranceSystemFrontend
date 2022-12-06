@@ -19,6 +19,8 @@ import { useNavigate } from 'react-router';
 import Web3function from './WEB3/Web3function';
 import abijson from './WEB3/abi.json';
 import getPolicy from './store/policy';
+import { Policy } from './store/policy';
+import { Claim } from './store/claim';
 const config = {
   baseURL: "http://localhost:3000/data/test.json",
 }
@@ -136,7 +138,7 @@ export default function InsuranceLogged(props:any) {
   const [isLoading, setLoading] = React.useState(true);
   const [allPolicy, setAllPolicy] = React.useState<Policy[]>([]);
   const [allPolicyAddress, setAllPolicyAddress] = React.useState<ContractAddress[]>([]);
-  const [nowPolicy,setNowPolicy] = React.useState<Policy>(allPolicy[0]);
+  const [nowAddress,setNowAddress] = React.useState<string>('');
   const [ownPolicy,setOwnPolicy] = React.useState<Claim[]>([]);
   const [contractConnect ,setContractConnect] = React.useState(false);
 
@@ -152,32 +154,28 @@ export default function InsuranceLogged(props:any) {
       console.log(error);
     });
   }, []);
+
   React.useEffect(()=>{
-    if(allPolicyAddress.length != 0){
-      connectContract(allPolicyAddress[0].address)
-      setContractConnect(true);
+    if(allPolicyAddress.length!=0){
+      setNowAddress(allPolicyAddress[0].address)
     }
-  },[allPolicyAddress]);
+  },[allPolicyAddress])
+  // const {connectContract,disconnectContract,contractCall} = Web3function({web3:web3,accounts:accounts,abi:abijson})
 
-  React.useEffect(()=>{
-    getAllPolicy
-  },[contractConnect])
-  const {connectContract,disconnectContract,contractCall} = Web3function({web3:web3,accounts:accounts,abi:abijson})
-
-  const getAllPolicy = () => {
-    allPolicyAddress.forEach((policyAddress:ContractAddress)=>{
-          console.log(policyAddress.address);
-          
-          allPolicy.push(
-            getPolicy(connectContract,contractCall,policyAddress.address)
-          )
-        })
-    console.log(allPolicy)
-  }
-  React.useEffect(()=>{
-    setNowPolicy(allPolicy[0]);
-    // connectContract(allPolicyAddress[0].address)
-  },[allPolicy])
+  // const getAllPolicy = () => {
+  //   allPolicyAddress.forEach((policyAddress:ContractAddress)=>{
+  //         console.log(policyAddress.address);
+  //         connectContract(policyAddress.address)
+  //         allPolicy.push(
+  //           getPolicy(contractCall,policyAddress.address)
+  //         )
+  //       })
+  //   console.log(allPolicy)
+  // }
+  // React.useEffect(()=>{
+  //   setNowPolicy(allPolicy[0]);
+  //   // connectContract(allPolicyAddress[0].address)
+  // },[allPolicy])
 
   React.useEffect(()=>{
     setNowClaim(ownPolicy[0]);
@@ -256,10 +254,10 @@ export default function InsuranceLogged(props:any) {
         setNowClaim(addPolicy);
       }
     }
-    nowPolicy.amount=addPolicy.amount;
+    // nowPolicy.amount=addPolicy.amount;
   };
   const handlePolicyChange = (event: React.ChangeEvent<unknown>,page:number) =>{
-    setNowPolicy(allPolicy[page-1])
+    setNowAddress(allPolicyAddress[page-1].address)
   }
   const handleClaimChange = (event: React.ChangeEvent<unknown>,page:number) =>{
     setNowClaim(ownPolicy[page-1])
@@ -271,20 +269,22 @@ export default function InsuranceLogged(props:any) {
     setNowClaim(newOwnPolicy[0]);
   }
 
-  if (isLoading || !nowPolicy) {
+  if (isLoading || !nowAddress) {
     return <div className="App">Loading...</div>;
   }
 
   return (
     <Container>
       <Box sx={{ width: '100%' }}>
+      {/* <Button style={{ marginLeft: '1rem' }} variant="outlined" color="warning" disabled={!web3} onClick={() => logout()}>Disconnect</Button> */}
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        
           <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
             <Tab label="All Policies" {...a11yProps(0)} />
             <Tab label="Own Policies" {...a11yProps(1)} />
+            <Tab label="Logout" disabled={!web3} onClick={() => logout()}></Tab>
           </Tabs>
-          <Button style={{ marginLeft: '1rem' }} variant="outlined" color="warning" disabled={!web3} onClick={() => logout()}>Disconnect</Button>
-          <Button style={{ marginLeft: '1rem' }} variant="outlined" color="warning" disabled={!web3} onClick={() => getAllPolicy()}>TEST</Button>
+          {/* <Button style={{ marginLeft: '1rem' }} variant="outlined" color="warning" disabled={!web3} onClick={() => getAllPolicy()}>TEST</Button> */}
         </Box>
         <TabPanel value={value} index={0}>
           All Available Policies
@@ -301,14 +301,21 @@ export default function InsuranceLogged(props:any) {
             <TextField id="Category" label="Category" variant="standard" />
             <TextField id="Keyword" label="Keyword" variant="standard" />
             <Button variant="outlined">Search</Button>
-            
+            {/* <Button style={{ marginLeft: '1rem' }} variant="outlined" color="warning" disabled={!web3} onClick={() => logout()}>Disconnect</Button> */}
+            </Box>
+            {/* {
+              nowAddress !== null && nowAddress !== '' && <Policy address={nowAddress} />
+            } */}
+            {
+              allPolicyAddress.length !== 0 && allPolicyAddress.map((address) =><Policy address={address.address} />)
+            }
             {/* <Button variant="outlined" onClick={handleGetDataClick}>Get data (see console log f12)</Button> */}
-          </Box>
-            <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><BorderBox value={nowPolicy} onclick={handleBuyClick} ></BorderBox></Box>
+          
+            {/* <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><BorderBox value={nowPolicy} onclick={handleBuyClick} ></BorderBox></Box>
               <BuyPolicyDialog value={open} onClose={()=>{setOpen(false)}} onPolicyNumber={addOwnPolicy} onsuccess={() => setOnBuySuccess(true)} onerror={()=>setOnBuyError(true)} policy={nowPolicy}></BuyPolicyDialog>
               <ErrorDialog value={onBuySuccess} title={'購買成功！'} context={`成功購買${nowPolicy.amount}單位！已從帳戶扣款${nowPolicy.amount * nowPolicy.price}ETH。`} onClose={()=>{ setOnBuySuccess(false)}} ></ErrorDialog>
               <ErrorDialog value={onBuyError} title={'購買失敗！'} context={`你帳戶餘額低於${nowPolicy.amount * nowPolicy.price}ETH，請確認帳戶餘額充足後再試一次。`} onClose={()=>{setOnBuyError(false)}}></ErrorDialog>
-              <ErrorDialog value={onHealthError} title={'不符合資格'} context={'你的健康狀況並不符合加保資格！請參考其他保單，或洽保險公司諮詢。'} onClose={()=>{setOnHealthError(false)}}></ErrorDialog>
+              <ErrorDialog value={onHealthError} title={'不符合資格'} context={'你的健康狀況並不符合加保資格！請參考其他保單，或洽保險公司諮詢。'} onClose={()=>{setOnHealthError(false)}}></ErrorDialog> */}
             <Stack alignItems="center">
               <Pagination count={allPolicy.length} variant="outlined" shape="rounded" sx={{margin: "auto"}} onChange={handlePolicyChange}/>
             </Stack>
@@ -330,10 +337,13 @@ export default function InsuranceLogged(props:any) {
             <TextField id="Keyword" label="Keyword" variant="standard" />
             <Button variant="outlined">Search</Button>
           </Box>
-          <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><ClaimBox value={nowClaim} onclick={handleClaimClick} ></ClaimBox></Box>
+          {
+              allPolicyAddress.length !== 0 && allPolicyAddress.map((address) =><Claim address={address.address} />)
+          }
+          {/* <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><ClaimBox value={nowClaim} onclick={handleClaimClick} ></ClaimBox></Box>
           <ClaimDialog value={openClaim} onClose={()=>{setOpenClaim(false)}} onsuccess={ handleBuySuccess } onSetMoney={()=>setClaimMoney(nowClaim.amount*nowClaim.money)} policy={nowClaim} ></ClaimDialog>
           <ErrorDialog value={onClaimSuccess} title={'申請理賠成功！'} context={`保險公司已支付 ${claimMoney} ETH到您戶頭。`} onClose={()=>{ setOnClaimSuccess(false)}}></ErrorDialog>
-          <ErrorDialog value={onCertificateError} title={'不符合資格'} context={'並無相關診斷證明可申請理賠，若結果不符預期請洽詢保險公司。'} onClose={()=>{setOnCertificateError(false)}}></ErrorDialog>
+          <ErrorDialog value={onCertificateError} title={'不符合資格'} context={'並無相關診斷證明可申請理賠，若結果不符預期請洽詢保險公司。'} onClose={()=>{setOnCertificateError(false)}}></ErrorDialog> */}
           <Stack alignItems="center">
               <Pagination count={ownPolicy.length} variant="outlined" shape="rounded" sx={{margin: "auto"}} onChange={handleClaimChange}/>
             </Stack>

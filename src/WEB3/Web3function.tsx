@@ -7,36 +7,37 @@ interface Web3CardParam {
     web3: Web3|null;
     accounts: string[];
     abi:any;
+    address:string;
 }
 
 const Web3function = ({
     web3,
     accounts,
     abi,
+    address,
   }: Web3CardParam) =>{
-    const [contractAddress, setContractAddress] = React.useState('0x7Fa0b3174bDFb34B47451490f0B10D405e4Bc520');
+    const [contractAddress, setContractAddress] = React.useState(address);
     const {
         contract,
         resetContract
     } = useContract();
 
-      const connectContract = (contractAddress:string) => {
+      const connectContract = () => {
         resetContract({
             abi: abi,
             address: contractAddress,
             web3:web3
         });
+        
     };
 
     const disconnectContract = () => {
         resetContract();
     };
-    const{
-      contractCall
-    } = ContractActions({
-      contract:contract,
-      accounts:accounts
-    });
+
+    const logcontract = () => {
+        console.log(`reset:${contract}`)
+    };
 
     // const getPolicyName = () => {
     //   contractCall({
@@ -68,9 +69,10 @@ const Web3function = ({
     //   });
     // };
     return{
+        contract,
         connectContract,
         disconnectContract,
-        contractCall
+        logcontract,
     };
   }
 
