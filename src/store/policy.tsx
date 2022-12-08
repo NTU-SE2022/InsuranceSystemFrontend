@@ -62,7 +62,7 @@ const getPolicy = (contractCall:({
                 method: 'policyName',
                 param: [],
                 callback: (res) => {
-                    console.log(res);
+                    // console.log(res);
                     setPolicyName(res);
                 }
             });
@@ -134,7 +134,7 @@ export const Policy = ({address}:PolicyAddress) => {
             getPolicySymbol();
             getPolicyMaxQuantity();
             getPolicyPrice();
-            getHealthVerfication();
+            // getHealthVerfication();
             getConsiderSymptoms();
         }
     },[connect])
@@ -158,7 +158,7 @@ export const Policy = ({address}:PolicyAddress) => {
             method: 'companyName',
             param: [],
             callback: (res) => {
-                console.log(res)
+                // console.log(res)
                 setCompanyName(res);
             }
         });
@@ -230,7 +230,7 @@ export const Policy = ({address}:PolicyAddress) => {
             method: 'getConsideredSymptoms',
             param: [],
             callback: (res) => {
-                console.log(res);
+                // console.log(res);
                 setConsiderSymptom(res);
                 // console.log(res)
             }

@@ -17,7 +17,7 @@ import useEthereum from './WEB3/useEthereum';
 import { userWallet } from '.';
 import { useNavigate } from 'react-router';
 import Web3function from './WEB3/Web3function';
-import abijson from './WEB3/abi.json';
+
 import getPolicy from './store/policy';
 import { Policy } from './store/policy';
 import { Claim } from './store/claim';

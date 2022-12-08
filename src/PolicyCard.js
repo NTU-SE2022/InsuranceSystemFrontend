@@ -45,7 +45,7 @@ function BorderBoxContent(props){
         <Box component="p">Policy Description:{props.value.description}</Box>
         <Box component="p">Price:{props.value.price}</Box>
         <Box component="p">MaxQuantity:{props.value.maxQuantity}</Box>
-        <Box component='p'>Feature:{props.value.considerSymptom.map((policy=>(<Box component='li'>{policy}</Box>)))}</Box>
+        <Box component='p'>Feature:{props.value.considerSymptom.map((policy=>(<Box key={props.value.symbol} component='li'>{policy}</Box>)))}</Box>
         {/* <Box component="p">Category:{props.value.category}</Box>
         <Box component='p'>Feature:{props.value.feature.map((policy=>(<Box component='li'>{policy}</Box>)))}</Box>
         <Box component='p'>Coverage:{props.value.coverage.map((policy=>(<Box component='li'>{policy}</Box>)))}</Box> */}

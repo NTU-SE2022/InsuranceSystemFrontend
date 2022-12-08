@@ -63,7 +63,7 @@ const getPolicy = (contractCall:({
                 method: 'policyName',
                 param: [],
                 callback: (res) => {
-                    console.log(res);
+                    // console.log(res);
                     setPolicyName(res);
                 }
             });
@@ -136,7 +136,7 @@ export const Claim = ({address}:PolicyAddress) => {
             // getPolicyMaxQuantity();
             getPolicyPrice();
             getPolicyAmount();
-            getCertificateVerfication();
+            // getCertificateVerfication();
         }
     },[connect])
     const [symbol,setSymbol] = React.useState('');
@@ -158,7 +158,7 @@ export const Claim = ({address}:PolicyAddress) => {
             method: 'companyName',
             param: [],
             callback: (res) => {
-                console.log(res)
+                // console.log(res)
                 setCompanyName(res);
             }
         });
@@ -205,10 +205,16 @@ export const Claim = ({address}:PolicyAddress) => {
     };
 
     const getPolicyAmount = () => {
+        // if(!contract) return
+        // contract.methods['balanceOf'].apply(this, [accounts[0]]).call({"from": accounts[0]}).then((res:any)=>{
+        //     console.log(res);
+        //     setAmount(res);
+        // });
         contractCall({
             method: 'balanceOf',
-            param: accounts,
+            param: [accounts[0]],
             callback: (res) => {
+                console.log(res);
                 setAmount(res);
             }
         });
@@ -225,14 +231,19 @@ export const Claim = ({address}:PolicyAddress) => {
     };
 
     const getCertificateVerfication = () => {
-        contractCall({
-            method: 'eligibilityVerificationForClaim',
-            param: [],
-            callback: (res) => {
-                setCertificateVerfication(res);
-                // console.log(res)
-            }
+        if(!contract) return
+        contract.methods['eligibilityVerificationForClaim'].apply(this, []).call({"from": accounts[0]}).then((res:any)=>{
+            console.log(res);
+            setCertificateVerfication(res);
         });
+        // contractCall({
+        //     method: 'eligibilityVerificationForClaim',
+        //     param: [],
+        //     callback: (res) => {
+        //         setCertificateVerfication(res);
+        //         // console.log(res)
+        //     }
+        // });
     }
 
     const makeClaim = (cbfunction:(res:any) => {}) => {
