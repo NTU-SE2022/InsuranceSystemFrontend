@@ -2,7 +2,7 @@ import * as React from 'react';
 import { userWallet } from '..';
 import { useNavigate } from 'react-router';
 import Web3function from '../WEB3/Web3function';
-import abijson from '../WEB3/abi.json';
+import abijson from '../WEB3/new_abi.json';
 import Box from '@mui/material/Box';
 import { BorderBox } from '../PolicyCard';
 import ContractActions from '../WEB3/ContractActions'
@@ -20,6 +20,13 @@ interface Policy {
   }
   interface PolicyAddress {
     address:string;
+    keyword:PolicyKeyword|null
+  }
+  interface PolicyKeyword {
+    companyName:string;
+    policyName:string;
+    features:string;
+    description:string;
   }
   interface ContractCallParam {
     method: string;
@@ -107,7 +114,8 @@ const getPolicy = (contractCall:({
 
 export default getPolicy;
 
-export const Policy = ({address}:PolicyAddress) => {
+export const Policy = ({address,keyword}:PolicyAddress) => {
+    
     const {
         isMetaMaskInstalled,
         provider,
@@ -120,6 +128,22 @@ export const Policy = ({address}:PolicyAddress) => {
     const {contract,connectContract,disconnectContract,logcontract} = Web3function({web3:web3,accounts:accounts,abi:abijson,address:address})
     const{contractCall} = ContractActions({contract:contract,accounts:accounts});
     const [connect,setConnect] = React.useState(false)
+    const [matchKeyword,setMatchKeyWord] = React.useState(true)
+
+    React.useEffect(() => {
+        if(keyword){
+            let show = false
+            if(keyword.description == "" && keyword.companyName =="" && keyword.policyName == "" && keyword.features ==""){show = true}
+            if(keyword.companyName == companyName){show = true}
+            if(keyword.policyName == policyName){show = true}
+            if(considerSymptom.includes(keyword.features)){show = true}
+            if(keyword.description != ""){
+                if(description.includes(keyword.description)){show = true}
+            }
+            setMatchKeyWord(show)
+            console.log(keyword);
+        }
+    },[keyword])
     React.useEffect(()=>{
         // {connectContract,disconnectContract,contractCall} = Web3function({web3:web3,accounts:accounts,abi:abijson,address:address})
         connectContract()
@@ -134,7 +158,7 @@ export const Policy = ({address}:PolicyAddress) => {
             getPolicySymbol();
             getPolicyMaxQuantity();
             getPolicyPrice();
-            // getHealthVerfication();
+            getHealthVerfication();
             getConsiderSymptoms();
         }
     },[connect])
@@ -145,14 +169,14 @@ export const Policy = ({address}:PolicyAddress) => {
     const [description,setDescription] = React.useState('');
     const [companyName,setCompanyName] = React.useState('');
     const [policyName,setPolicyName] = React.useState('');
-    const [considerSymptom, setConsiderSymptom] = React.useState([]);
+    const [considerSymptom, setConsiderSymptom] = React.useState<string[]>([]);
 
     const [healthVerfication,setHealthVerfication] = React.useState(true);
     const [onHealthError,setOnHealthError] = React.useState(false);
     const [open,setOpen] = React.useState(false);
     const [onBuySuccess, setOnBuySuccess] = React.useState(false);
     const [onBuyError, setOnBuyError] = React.useState(false);
-
+    const [onOverNumberError,setOnOverNumberError] = React.useState(false);
     const getCompanyName = () => {
         contractCall({
             method: 'companyName',
@@ -230,7 +254,7 @@ export const Policy = ({address}:PolicyAddress) => {
             method: 'getConsideredSymptoms',
             param: [],
             callback: (res) => {
-                // console.log(res);
+                console.log(res);
                 setConsiderSymptom(res);
                 // console.log(res)
             }
@@ -239,11 +263,21 @@ export const Policy = ({address}:PolicyAddress) => {
 
     const buyPolicy = (amount:number,cbfunction:(res:any) => {}) => {
         setAmount(amount);
-        contractCall({
-            method: 'mintPolicy',
-            param: [amount],
-            callback: cbfunction
+        if(!contract) return
+        contract.methods['mintPolicy'](amount).send({"from": accounts[0],"value":amount*price}).then((res:any)=>{
+            setOpen(false);
+            setOnBuySuccess(true);
+        }).catch((error: any)=>{
+            console.log(error);
+            setOpen(false);
+            setOnBuyError(true);
+            
         });
+        // contractCall({
+        //     method: 'mintPolicy',
+        //     param: [amount],
+        //     callback: cbfunction
+        // });
     }
 
     const handleBuyClick = () => {
@@ -269,13 +303,21 @@ export const Policy = ({address}:PolicyAddress) => {
     }
 
     return(
-        <Box>
-        <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><BorderBox value={policy} onclick={handleBuyClick} ></BorderBox></Box>
-        <BuyPolicyDialog value={open} onClose={()=>{setOpen(false)}} onsuccess={() => setOnBuySuccess(true)} handleBuyPolicy = {buyPolicy} onerror={()=>setOnBuyError(true)} policy = {policy}></BuyPolicyDialog>
-        <ErrorDialog value={onBuySuccess} title={'購買成功！'} context={`成功購買${amount}單位！已從帳戶扣款${amount * price}ETH。`} onClose={()=>{ setOnBuySuccess(false)}} ></ErrorDialog>
-        <ErrorDialog value={onBuyError} title={'購買失敗！'} context={`你帳戶餘額低於${amount * price}ETH，請確認帳戶餘額充足後再試一次。`} onClose={()=>{setOnBuyError(false)}}></ErrorDialog>
-        <ErrorDialog value={onHealthError} title={'不符合資格'} context={'你的健康狀況並不符合加保資格！請參考其他保單，或洽保險公司諮詢。'} onClose={()=>{setOnHealthError(false)}}></ErrorDialog>
-        </Box>
+        <div>
+        {
+            matchKeyword &&
+        <>
+            <Box>
+            <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><BorderBox value={policy} onclick={handleBuyClick} ></BorderBox></Box>
+            <BuyPolicyDialog value={open} onClose={()=>{setOpen(false)}} onsuccess={() => setOnBuySuccess(true)} handleBuyPolicy = {buyPolicy} onerror={()=>setOnBuyError(true)} onovernumber = {()=>{setOnOverNumberError(true)}} policy = {policy}></BuyPolicyDialog>
+            <ErrorDialog value={onBuySuccess} title={'購買成功！'} context={`成功購買${amount}單位！已從帳戶扣款${amount * price}ETH。`} onClose={()=>{ setOnBuySuccess(false)}} ></ErrorDialog>
+            <ErrorDialog value={onBuyError} title={'購買失敗！'} context={`你帳戶餘額低於${amount * price}ETH，請確認帳戶餘額充足後再試一次。`} onClose={()=>{setOnBuyError(false)}}></ErrorDialog>
+            <ErrorDialog value={onHealthError} title={'不符合資格'} context={'你的健康狀況並不符合加保資格！請參考其他保單，或洽保險公司諮詢。'} onClose={()=>{setOnHealthError(false)}}></ErrorDialog>
+            <ErrorDialog value={onOverNumberError} title={'超出可購買數量'} context={`可購買數量為${maxQuantity}，請調整數量`} onClose={()=>{setOnOverNumberError(false)}}></ErrorDialog>
+            </Box>
+        </>
+        }
+        </div>
     )
     
 }

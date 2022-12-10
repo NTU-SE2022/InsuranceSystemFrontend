@@ -95,13 +95,21 @@ export function ClaimBox(props){
             <ClaimBoxContent value={props.value}></ClaimBoxContent>
         </Box>
         <Box sx={{display:'flex',flexDirection:'column'}}>
-            <Box sx={{textAlign:'right',flexGrow:1}}><Button variant='outlined' fullWidth onClick={()=>props.onclick()}>Claim</Button></Box>
+            <Box sx={{textAlign:'right',flexGrow:1}}><Button variant='outlined' fullWidth onClick={()=>props.onclick()} disabled={props.value.expired}>Claim</Button></Box>
+            <Box sx={{textAlign:'right',flexGrow:1}}><Button variant='outlined' fullWidth onClick={()=>props.onbuy()} disabled={!props.value.expired}>Pay</Button></Box>
         </Box>
         </Box>
     )
 }
 
 function ClaimBoxContent(props){
+    let policyStatus = ""
+    if(props.value.expired){
+        policyStatus = "Expired"
+    }
+    else{
+        policyStatus ="Available"
+    };
     if (props.value === undefined){
         return
     };
@@ -121,10 +129,11 @@ function ClaimBoxContent(props){
         <Box component="p">Company Name:{props.value.companyName}</Box>
         <Box component="p">Policy Name:{props.value.policyName}</Box>
         <Box component="p">Symbol:{props.value.symbol}</Box>
+        <Box component="p">Status:{policyStatus}</Box>
         <Box component="p">Policy Description:{props.value.description}</Box>
         <Box component="p">Price:{props.value.price}</Box>
         <Box component="p">Amount:{props.value.amount}</Box>
-
+        <Box component="p">Total Claims:{props.value.amount*props.value.claimMoney}</Box>
         </Box>
     )
 }

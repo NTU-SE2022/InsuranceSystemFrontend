@@ -2,7 +2,7 @@ import * as React from 'react';
 import { userWallet } from '..';
 import { useNavigate } from 'react-router';
 import Web3function from '../WEB3/Web3function';
-import abijson from '../WEB3/abi.json';
+import abijson from '../WEB3/new_abi.json';
 import Box from '@mui/material/Box';
 import { BorderBox } from '../PolicyCard';
 import ContractActions from '../WEB3/ContractActions'
@@ -21,6 +21,13 @@ interface Policy {
   }
   interface PolicyAddress {
     address:string;
+    keyword:ClaimKeyword|null
+  }
+  interface ClaimKeyword {
+    companyName:string;
+    policyName:string;
+    status:string;
+    description:string;
   }
   interface ContractCallParam {
     method: string;
@@ -108,7 +115,7 @@ const getPolicy = (contractCall:({
 
 export default getPolicy;
 
-export const Claim = ({address}:PolicyAddress) => {
+export const Claim = ({address,keyword}:PolicyAddress) => {
     const {
         isMetaMaskInstalled,
         provider,
@@ -121,6 +128,8 @@ export const Claim = ({address}:PolicyAddress) => {
     const {contract,connectContract,disconnectContract,logcontract} = Web3function({web3:web3,accounts:accounts,abi:abijson,address:address})
     const{contractCall} = ContractActions({contract:contract,accounts:accounts});
     const [connect,setConnect] = React.useState(false)
+    const [matchKeyword,setMatchKeyWord] = React.useState(true)
+
     React.useEffect(()=>{
         // {connectContract,disconnectContract,contractCall} = Web3function({web3:web3,accounts:accounts,abi:abijson,address:address})
         connectContract()
@@ -133,12 +142,29 @@ export const Claim = ({address}:PolicyAddress) => {
             getPolicyName();
             getPolicyDescription();
             getPolicySymbol();
-            // getPolicyMaxQuantity();
             getPolicyPrice();
             getPolicyAmount();
-            // getCertificateVerfication();
+            getClaimVerfication();  
+            getClaimMoney();
         }
     },[connect])
+
+    React.useEffect(() => {
+        if(keyword){
+            let show = false
+            if(keyword.description == "" && keyword.companyName =="" && keyword.policyName == "" && keyword.status ==""){show = true}
+            if(keyword.companyName == companyName){show = true}
+            if(keyword.policyName == policyName){show = true}
+            if(keyword.status == "Expired" && expired){show = true}
+            if(keyword.status == "Available" && !expired){show = true}
+            if(keyword.description != ""){
+                if(description.includes(keyword.description)){show = true}
+            }
+            setMatchKeyWord(show)
+            console.log("keyword:" + keyword);
+        }
+    },[keyword])
+
     const [symbol,setSymbol] = React.useState('');
     const [maxQuantity,setMaxQuantity] = React.useState(0);
     const [amount,setAmount] = React.useState(0);
@@ -146,12 +172,31 @@ export const Claim = ({address}:PolicyAddress) => {
     const [description,setDescription] = React.useState('');
     const [companyName,setCompanyName] = React.useState('');
     const [policyName,setPolicyName] = React.useState('');
-
+    const [expired,setExpired] = React.useState(true);
+    const [tokenid,setTokenId] = React.useState<string[]>([])
+    const [claimMoney,setClaimMoney] = React.useState(0);
     const [onCertificateError,setOnCertificateError] = React.useState(false);
     const [open,setOpen] = React.useState(false);
     const [onClaimSuccess, setOnClaimSuccess] = React.useState(false);
     const [onClaimError, setOnClaimError] = React.useState(false);
+    const [onExpired,setOnExpired] = React.useState(false);
+    const [onBuyError, setOnBuyError] = React.useState(false);
     const [certificateVerfication,setCertificateVerfication] = React.useState(false);
+
+    React.useEffect(()=>{
+        if(amount!=0){
+            console.log('token id')
+            getTokenId();
+            getPolicyStatus();
+        }
+    },[amount])
+
+    React.useEffect(()=>{
+        if(tokenid.length != 0){
+            console.log('status')
+            getPolicyStatus();
+        }
+    },[tokenid])
 
     const getCompanyName = () => {
         contractCall({
@@ -204,6 +249,16 @@ export const Claim = ({address}:PolicyAddress) => {
         });
     };
 
+    const getClaimMoney = () => {
+        contractCall({
+            method: 'claimAmountCalculation',
+            param: [],
+            callback: (res) => {
+                setClaimMoney(res);
+            }
+        });
+    };
+
     const getPolicyAmount = () => {
         // if(!contract) return
         // contract.methods['balanceOf'].apply(this, [accounts[0]]).call({"from": accounts[0]}).then((res:any)=>{
@@ -214,26 +269,45 @@ export const Claim = ({address}:PolicyAddress) => {
             method: 'balanceOf',
             param: [accounts[0]],
             callback: (res) => {
-                console.log(res);
                 setAmount(res);
             }
         });
     };
 
-    const getPolicyMaxQuantity = () => {
+    const getTokenId = () => {
         contractCall({
-            method: 'maxQuantity',
-            param: [],
+            method: 'getIdsByAddress',
+            param: [accounts[0]],
             callback: (res) => {
-                setMaxQuantity(res);
+                setTokenId(res);
             }
         });
     };
 
-    const getCertificateVerfication = () => {
+    const getPolicyStatus = () => {
+        contractCall({
+            method: 'isPurchased',
+            param: [0],
+            callback: (res) => {
+                console.log(`status:${!res}`)
+                setExpired(Boolean(!res));
+            }
+        });
+    };
+
+    const purchaseClaim = (id:string) => {
+        console.log('purchaseClaim');
+        if(!contract) return
+        contract.methods['purchase'](parseInt(id)).send({"from": accounts[0],"value":price}).then((res:any)=>{
+            
+        }).catch(()=>{
+            setOnBuyError(true)
+        });
+    };
+
+    const getClaimVerfication = () => {
         if(!contract) return
         contract.methods['eligibilityVerificationForClaim'].apply(this, []).call({"from": accounts[0]}).then((res:any)=>{
-            console.log(res);
             setCertificateVerfication(res);
         });
         // contractCall({
@@ -246,11 +320,14 @@ export const Claim = ({address}:PolicyAddress) => {
         // });
     }
 
-    const makeClaim = (cbfunction:(res:any) => {}) => {
-        contractCall({
-            method: 'claim',
-            param: [],
-            callback: cbfunction
+    const makeClaim = () => {
+        if(!contract) return
+        contract.methods['claim'](0).send({"from": accounts[0]}).then((res:any)=>{
+            setOnClaimSuccess(true)
+            setOpen(false)
+        }).catch(()=>{
+            setOnClaimSuccess(false)
+            setOpen(false)
         });
     }
 
@@ -267,11 +344,18 @@ export const Claim = ({address}:PolicyAddress) => {
         maxQuantity:maxQuantity,
         amount:amount,
         price:price,
-        address:address
+        address:address,
+        expired:expired,
+        claimMoney:claimMoney
     }
 
     const handleClaimClick = () => {
-        if(certificateVerfication){
+        // if(expired){
+        //     setOnExpired(true)
+        //     return
+        // }
+        // if(certificateVerfication){
+        if(true){
           setOpen(true);
         }
         else{
@@ -279,16 +363,32 @@ export const Claim = ({address}:PolicyAddress) => {
         }
       }
 
+
+    const handlePayment = () => {
+        const idPromise = new Promise((resolve,reject) => {
+            tokenid.forEach((id) => {purchaseClaim(id)});
+            resolve('success');
+        })
+        if(true){
+            idPromise.then(()=>{
+                console.log('buy success')
+            }).catch(()=>{
+                setOnBuyError(true)
+            })
+        }
+    }
     return(
 
         <div>
             { 
                 amount != 0  &&
+                matchKeyword  &&
                 <>
-                <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><ClaimBox value={policy} onclick={handleClaimClick} ></ClaimBox></Box>
+                <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><ClaimBox value={policy} onclick={handleClaimClick} onbuy={handlePayment} expired={Boolean(expired)}></ClaimBox></Box>
                 <ClaimDialog value={open} onClose={()=>{setOpen(false)}} onsuccess={ handleBuySuccess } policy={policy} onClaim = {makeClaim}></ClaimDialog>
                 <ErrorDialog value={onClaimSuccess} title={'申請理賠成功！'} context={`保險公司已支付 ${amount*price} ETH到您戶頭。`} onClose={()=>{ setOnClaimSuccess(false)}}></ErrorDialog>
                 <ErrorDialog value={onCertificateError} title={'不符合資格'} context={'並無相關診斷證明可申請理賠，若結果不符預期請洽詢保險公司。'} onClose={()=>{setOnCertificateError(false)}}></ErrorDialog>
+                <ErrorDialog value={onBuyError} title={'購買失敗！'} context={`你帳戶餘額低於${amount * price}ETH，請確認帳戶餘額充足後再試一次。`} onClose={()=>{setOnBuyError(false)}}></ErrorDialog>
                 </>
             }
         </div>

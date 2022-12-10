@@ -57,25 +57,34 @@ export function BuyPolicyDialog(props){
     const handleTextInputChange = event => {
         setTextInput(event.target.value);
     };
-    const EnoughETH = true;
+    // const EnoughETH = true;
     const handleClose = () => {
         props.onClose();
     };
 
     const handlePolicyNumber = () =>{
-        
-        if(EnoughETH){
-            props.onClose();
-            props.handleBuyPolicy(parseInt(textInput),buyETH);
-            props.onsuccess();
+        if(parseInt(textInput) > props.policy.maxQuantity){
+            props.onovernumber();
         }
         else{
-            props.onerror();
+            props.handleBuyPolicy(parseInt(textInput));
         }
+        // if(EnoughETH){
+        //     props.onClose();
+            
+        //     props.onsuccess();
+        // }
+        // else{
+        //     props.onerror();
+        // }
     }
-    const buyETH = (res) => {
-        console.log(res)
-    }
+    // const buyETH = (res) => {
+    //     res.then(()=>{
+
+    //     }).catch({
+    //         props.onerror();
+    //     })
+    // }
     return(
         <Dialog
         open={props.value}
@@ -102,16 +111,14 @@ export function BuyPolicyDialog(props){
 }
 export function ClaimDialog(props){
     let money = 0;
-    console.log(props)
     if(props.policy != undefined){
-        money = props.policy.money*props.policy.amount;
+        money = props.policy.claimMoney*props.policy.amount;
     }
     const handleClose = () => {
         props.onClose();
     };
     const handleClick = () =>{
-        props.onsuccess();
-        props.onClose();
+        props.onClaim();
     }
     return(
         <Dialog
