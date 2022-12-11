@@ -8,7 +8,6 @@ const ipfsAttachments = {
 }
 
 export function BorderBox(props){
-    console.log(props);
     return(
         <Box
         sx={{
