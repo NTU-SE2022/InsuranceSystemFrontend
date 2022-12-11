@@ -299,13 +299,14 @@ export const Claim = ({address,keyword}:PolicyAddress) => {
     };
 
     const purchaseClaim = (id:string) => {
-        console.log('purchaseClaim');
+        // console.log('purchaseClaim');
         if(!contract) return
-        contract.methods['purchase'](parseInt(id)).send({"from": accounts[0],"value":price}).then((res:any)=>{
-            
-        }).catch(()=>{
-            setOnBuyError(true)
-        });
+        contract.methods['purchase'](parseInt(id)).send({"from": accounts[0],"value":price})
+        // contract.methods['purchase'](parseInt(id)).send({"from": accounts[0],"value":price}).then((res:any)=>{
+        //     console.log('send')
+        // }).catch(()=>{
+        //     setOnBuyError(true)
+        // });
     };
 
     const getClaimVerfication = () => {
@@ -323,15 +324,37 @@ export const Claim = ({address,keyword}:PolicyAddress) => {
         // });
     }
 
-    const makeClaim = () => {
+    const makeClaim = (id:string) => {
         if(!contract) return
-        contract.methods['claim'](0).send({"from": accounts[0]}).then((res:any)=>{
-            setOnClaimSuccess(true)
-            setOpen(false)
-        }).catch(()=>{
-            setOnClaimSuccess(false)
-            setOpen(false)
-        });
+        return contract.methods['claim'](parseInt(id)).send({"from": accounts[0]})
+        // contract.methods['claim'](parseInt(id)).send({"from": accounts[0]}).then((res:any)=>{
+        // }).catch(()=>{
+        //     setOnClaimSuccess(false)
+        //     setOpen(false);
+        // });
+    }
+
+    const handleMakeClaim = () =>{
+        var actions = tokenid.map(makeClaim)
+        console.log(actions)
+        const claimPromise =Promise.all(actions)
+        // const claimPromise = new Promise((resolve,reject) => {
+            
+        //     tokenid.forEach((value, index, array) => {
+        //         makeClaim(value);
+        //         console.log(index)
+        //         if (index === array.length -1) resolve('success');
+        //     });
+        // })
+        if(certificateVerfication){
+            claimPromise.then(()=>{
+                setOnClaimSuccess(true)
+                setOpen(false);
+            }).catch((error)=>{
+                setOnClaimSuccess(false)
+                setOpen(false);
+            })
+        }
     }
 
     const handleBuySuccess = () => {
@@ -358,7 +381,7 @@ export const Claim = ({address,keyword}:PolicyAddress) => {
         //     return
         // }
         // if(certificateVerfication){
-        if(true){
+        if(certificateVerfication){
           setOpen(true);
         }
         else{
@@ -368,15 +391,15 @@ export const Claim = ({address,keyword}:PolicyAddress) => {
 
 
     const handlePayment = () => {
-        const idPromise = new Promise((resolve,reject) => {
-            tokenid.forEach((id) => {purchaseClaim(id)});
-            resolve('success');
-        })
-        if(true){
+        var purchaseActions = tokenid.map(purchaseClaim)
+        const idPromise = Promise.all(purchaseActions)
+        if(expired){
             idPromise.then(()=>{
                 console.log('buy success')
             }).catch(()=>{
                 setOnBuyError(true)
+                setOnClaimSuccess(false)
+                setOpen(false);
             })
         }
     }
@@ -388,10 +411,10 @@ export const Claim = ({address,keyword}:PolicyAddress) => {
                 matchKeyword  &&
                 <>
                 <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><ClaimBox value={policy} onclick={handleClaimClick} onbuy={handlePayment} expired={Boolean(expired)}></ClaimBox></Box>
-                <ClaimDialog value={open} onClose={()=>{setOpen(false)}} onsuccess={ handleBuySuccess } policy={policy} onClaim = {makeClaim}></ClaimDialog>
+                <ClaimDialog value={open} onClose={()=>{setOpen(false)}} onsuccess={ handleBuySuccess } policy={policy} onClaim = {handleMakeClaim}></ClaimDialog>
                 <ErrorDialog value={onClaimSuccess} title={'申請理賠成功！'} context={`保險公司已支付 ${amount*price} ETH到您戶頭。`} onClose={()=>{ setOnClaimSuccess(false)}}></ErrorDialog>
                 <ErrorDialog value={onCertificateError} title={'不符合資格'} context={'並無相關診斷證明可申請理賠，若結果不符預期請洽詢保險公司。'} onClose={()=>{setOnCertificateError(false)}}></ErrorDialog>
-                <ErrorDialog value={onBuyError} title={'購買失敗！'} context={`你帳戶餘額低於${amount * price}ETH，請確認帳戶餘額充足後再試一次。`} onClose={()=>{setOnBuyError(false)}}></ErrorDialog>
+                <ErrorDialog value={onBuyError} title={'購買失敗！'} context={`你帳戶餘額低於${amount * price}WEI，請確認帳戶餘額充足後再試一次。`} onClose={()=>{setOnBuyError(false)}}></ErrorDialog>
                 </>
             }
         </div>

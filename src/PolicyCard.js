@@ -50,9 +50,9 @@ function BorderBoxContent(props){
                     { replaceWithSlashN(props.value.description) }
                 </Typography>
             </Box>
-            <Box component="p">
+            {/* <Box component="p">
                 Policy Description:<p dangerouslySetInnerHTML={{__html: replaceWithBr(props.value.description)}} />
-            </Box>
+            </Box> */}
             
             <Box component="p">Price:{props.value.price}</Box>
             <Box component="p">MaxQuantity:{props.value.maxQuantity}</Box>
