@@ -24,7 +24,7 @@ export function BorderBox(props){
         }}
         >
         <Box sx={{flexGrow:10}}>
-            <BorderBoxContent value={props.value}></BorderBoxContent>
+            <BorderBoxContent value={props.value} />
         </Box>
         <Box sx={{display:'flex',flexDirection:'column'}}>
             <Box sx={{textAlign:'right',flexGrow:1}}><Button variant='outlined' fullWidth>Attachment</Button></Box>
@@ -38,28 +38,40 @@ function BorderBoxContent(props){
     if (props.value === undefined){
         return
     };
+
     return(
         <Box flex={1} sx={{height:'100%',textAlign:'left' ,overflow:"auto"}}>
-        <Box component="p">Company Name:{props.value.companyName}</Box>
-        <Box component="p">Policy Name:{props.value.policyName}</Box>
-        <Box component="p">Symbol:{props.value.symbol}</Box>
-        <Box component="p">Policy Description:<Typography style={{whiteSpace: 'pre-line'}}>{props.value.description}</Typography></Box>
-        <Box component="p">Policy Description:<p dangerouslySetInnerHTML={{__html: replaceWithBr(props.value.description)}} /></Box>
-        
-        <Box component="p">Price:{props.value.price}</Box>
-        <Box component="p">MaxQuantity:{props.value.maxQuantity}</Box>
-        <Box component='p'>Feature:{props.value.considerSymptom.map((policy=>(<Box key={props.value.symbol} component='li'>{policy}</Box>)))}</Box>
-        {/* <Box component="p">Category:{props.value.category}</Box>
-        <Box component='p'>Feature:{props.value.feature.map((policy=>(<Box component='li'>{policy}</Box>)))}</Box>
-        <Box component='p'>Coverage:{props.value.coverage.map((policy=>(<Box component='li'>{policy}</Box>)))}</Box> */}
+            <Box component="p">Company Name:{props.value.companyName}</Box>
+            <Box component="p">Policy Name:{props.value.policyName}</Box>
+            <Box component="p">Symbol:{props.value.symbol}</Box>
+            <Box component="p">
+                Policy Description:
+                <Typography style={{ whiteSpace: 'pre-line' }}>
+                    { replaceWithSlashN(props.value.description) }
+                </Typography>
+            </Box>
+            <Box component="p">
+                Policy Description:<p dangerouslySetInnerHTML={{__html: replaceWithBr(props.value.description)}} />
+            </Box>
+            
+            <Box component="p">Price:{props.value.price}</Box>
+            <Box component="p">MaxQuantity:{props.value.maxQuantity}</Box>
+            <Box component='p'>Feature:{props.value.considerSymptom.map((policy=>(<Box key={props.value.symbol} component='li'>{policy}</Box>)))}</Box>
+            {/* <Box component="p">Category:{props.value.category}</Box>
+            <Box component='p'>Feature:{props.value.feature.map((policy=>(<Box component='li'>{policy}</Box>)))}</Box>
+            <Box component='p'>Coverage:{props.value.coverage.map((policy=>(<Box component='li'>{policy}</Box>)))}</Box> */}
         </Box>
     )
 }
 
 function replaceWithBr(input_string) {
-    console.log(input_string.replace("\\n ","<br />"))
-    return input_string.replace("\\n", "<br />")
-  }
+    return input_string.replace(/\\n/g, "<br />");
+}
+
+function replaceWithSlashN(input_string) {
+    return input_string.replace(/\\n/g, "\n");
+}
+
 // interface Claim {
 //     companyName: string;
 //     policeId: string;
@@ -80,31 +92,31 @@ export function ClaimBox(props){
     };
     return(
         <Box
-        sx={{
-        display:'flex',
-        flexDirection: 'row',
-        boxShadow: 3,
-        display:'flex',
-        width: '50rem',
-        height: '30rem',
-        bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#101010' : '#fff'),
-        color: (theme) =>
-            theme.palette.mode === 'dark' ? 'grey.300' : 'grey.800',
-        p: 1,
-        m: 1,
-        borderRadius: 2,
-        textAlign: 'center',
-        fontSize: '0.875rem',
-        fontWeight: '700',
-        }}
+            sx={{
+            display:'flex',
+            flexDirection: 'row',
+            boxShadow: 3,
+            display:'flex',
+            width: '50rem',
+            height: '30rem',
+            bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#101010' : '#fff'),
+            color: (theme) =>
+                theme.palette.mode === 'dark' ? 'grey.300' : 'grey.800',
+            p: 1,
+            m: 1,
+            borderRadius: 2,
+            textAlign: 'center',
+            fontSize: '0.875rem',
+            fontWeight: '700',
+            }}
         >
-        <Box sx={{flexGrow:10}}>
-            <ClaimBoxContent value={props.value}></ClaimBoxContent>
-        </Box>
-        <Box sx={{display:'flex',flexDirection:'column'}}>
-            <Box sx={{textAlign:'right',flexGrow:1}}><Button variant='outlined' fullWidth onClick={()=>props.onclick()} disabled={props.value.expired}>Claim</Button></Box>
-            <Box sx={{textAlign:'right',flexGrow:1}}><Button variant='outlined' fullWidth onClick={()=>props.onbuy()} disabled={!props.value.expired}>Pay</Button></Box>
-        </Box>
+            <Box sx={{flexGrow:10}}>
+                <ClaimBoxContent value={props.value}></ClaimBoxContent>
+            </Box>
+            <Box sx={{display:'flex',flexDirection:'column'}}>
+                <Box sx={{textAlign:'right',flexGrow:1}}><Button variant='outlined' fullWidth onClick={()=>props.onclick()} disabled={props.value.expired}>Claim</Button></Box>
+                <Box sx={{textAlign:'right',flexGrow:1}}><Button variant='outlined' fullWidth onClick={()=>props.onbuy()} disabled={!props.value.expired}>Pay</Button></Box>
+            </Box>
         </Box>
     )
 }
@@ -133,14 +145,14 @@ function ClaimBoxContent(props){
         // <Box component="p">Due Date:{props.value.dueDate.toString()}</Box>
         // </Box>
         <Box flex={1} sx={{height:'100%',textAlign:'left' ,overflow:"auto"}}>
-        <Box component="p">Company Name:{props.value.companyName}</Box>
-        <Box component="p">Policy Name:{props.value.policyName}</Box>
-        <Box component="p">Symbol:{props.value.symbol}</Box>
-        <Box component="p">Status:{policyStatus}</Box>
-        <Box component="p">Policy Description:{props.value.description}</Box>
-        <Box component="p">Price:{props.value.price}</Box>
-        <Box component="p">Amount:{props.value.amount}</Box>
-        <Box component="p">Total Claims:{props.value.amount*props.value.claimMoney}</Box>
+            <Box component="p">Company Name:{props.value.companyName}</Box>
+            <Box component="p">Policy Name:{props.value.policyName}</Box>
+            <Box component="p">Symbol:{props.value.symbol}</Box>
+            <Box component="p">Status:{policyStatus}</Box>
+            <Box component="p">Policy Description:{props.value.description}</Box>
+            <Box component="p">Price:{props.value.price}</Box>
+            <Box component="p">Amount:{props.value.amount}</Box>
+            <Box component="p">Total Claims:{props.value.amount*props.value.claimMoney}</Box>
         </Box>
     )
 }
