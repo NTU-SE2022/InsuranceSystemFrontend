@@ -1,8 +1,14 @@
 import * as React from 'react';
 import {Box,Button} from '@mui/material';
 import { Typography } from '@mui/material';
+
+const ipfsAttachments = {
+    "0xf49Bcbe5115Dcf86ECfD3Ec7C10EAB2183a55330": "https://ipfs.litnet.work/ipfs/QmaLFKXk8WBcLbk8wybEkQELcT71gTQfEbzXyuxM517Z6h?filename=Major%20diseases%20and%20major%20injuries.pdf",
+    "0x854e1a8B2E0a6D7fAE73D133998f45F2b81A112c": "https://ipfs.litnet.work/ipfs/QmQ5NUP8xCVotgcmrwi11UEM1yvSNkS9vq1zCyZbJxymSu?filename=Anti-cancer%20insurance.pdf",
+}
+
 export function BorderBox(props){
-    
+    console.log(props);
     return(
         <Box
         sx={{
@@ -27,7 +33,15 @@ export function BorderBox(props){
             <BorderBoxContent value={props.value} />
         </Box>
         <Box sx={{display:'flex',flexDirection:'column'}}>
-            <Box sx={{textAlign:'right',flexGrow:1}}><Button variant='outlined' fullWidth>Attachment</Button></Box>
+            {
+                ipfsAttachments[props.value.address] && (
+                    <Box sx={{textAlign:'right',flexGrow:1}}>
+                        <Button variant='outlined' fullWidth onClick={() => window.open(ipfsAttachments[props.value.address], '_blank')}>
+                            Attachment
+                        </Button>
+                    </Box>
+                )
+            }
             <Box sx={{textAlign:'right',flexGrow:1}}><Button variant='outlined' fullWidth onClick={()=>props.onclick()}>Buy Policy</Button></Box>
         </Box>
         </Box>
