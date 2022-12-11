@@ -5,6 +5,10 @@ import { Typography } from '@mui/material';
 const ipfsAttachments = {
     "0xf49Bcbe5115Dcf86ECfD3Ec7C10EAB2183a55330": "https://ipfs.litnet.work/ipfs/QmaLFKXk8WBcLbk8wybEkQELcT71gTQfEbzXyuxM517Z6h?filename=Major%20diseases%20and%20major%20injuries.pdf",
     "0x854e1a8B2E0a6D7fAE73D133998f45F2b81A112c": "https://ipfs.litnet.work/ipfs/QmQ5NUP8xCVotgcmrwi11UEM1yvSNkS9vq1zCyZbJxymSu?filename=Anti-cancer%20insurance.pdf",
+    "0xf49Bcbe5115Dcf86ECfD3Ec7C10EAB2183a55330": "https://ipfs.litnet.work/ipfs/Qmce8iuCoqiwux2JEoDh1YFre2Q1g6ZFjCivo26ChvRtyc?filename=Covid-19%20insurance.pdf",
+    "0xD52dc53057D5f6c44C03F1B53312b3bfA0A08E44": "https://ipfs.litnet.work/ipfs/Qmcc98Qq4ycrvbuc7Ba89EVXvaPxRF5sLnA8rhQNmw3ayn?filename=Disable%20insurance.pdf",
+    "0x50aebB53Dbb73C0939b038728D12DcA7dcb54B7a": "https://ipfs.litnet.work/ipfs/QmVJd3nuCTYD8DQUpfsj4h1h4k5n65TfzqjTJJq9bY3V2u?filename=life%20insurance.pdf",
+    "0x26c4938Af85c4E9C09Ca92127d7B91FDa2E8D1b7": "https://ipfs.litnet.work/ipfs/QmTduM8uEm7bTHgxzzRc3JSovAh2cbwQzEbwBUzeRDwTGY?filename=Injury%20and%20health%20insurance.pdf"
 }
 
 export function BorderBox(props){
