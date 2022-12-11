@@ -152,12 +152,8 @@ export default function InsuranceLogged(props:any) {
   // const { address } = useParams();
   // type script
   const config = {
-    // baseURL: "https://insurance-back.host.chillmonkey.com.tw/api/policies",
-    baseURL:"http://localhost:3000/data/test.json"
-  }
-  const configOwnPolicy = {
-    // baseURL: "https://insurance-back.host.chillmonkey.com.tw/api/policies",
-    baseURL:"http://localhost:3000/data/ownpolicy.json"
+    baseURL: "https://insurance-back.host.chillmonkey.com.tw/api/policies",
+    // baseURL:"http://localhost:3000/data/test.json"
   }
   const [isLoading, setLoading] = React.useState(true);
   const [allPolicy, setAllPolicy] = React.useState<Policy[]>([]);

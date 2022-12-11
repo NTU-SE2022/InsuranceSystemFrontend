@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {Box,Button} from '@mui/material';
+import { Typography } from '@mui/material';
 export function BorderBox(props){
     
     return(
@@ -42,7 +43,9 @@ function BorderBoxContent(props){
         <Box component="p">Company Name:{props.value.companyName}</Box>
         <Box component="p">Policy Name:{props.value.policyName}</Box>
         <Box component="p">Symbol:{props.value.symbol}</Box>
-        <Box component="p">Policy Description:{props.value.description}</Box>
+        <Box component="p">Policy Description:<Typography style={{whiteSpace: 'pre-line'}}>{props.value.description}</Typography></Box>
+        <Box component="p">Policy Description:<p dangerouslySetInnerHTML={{__html: replaceWithBr(props.value.description)}} /></Box>
+        
         <Box component="p">Price:{props.value.price}</Box>
         <Box component="p">MaxQuantity:{props.value.maxQuantity}</Box>
         <Box component='p'>Feature:{props.value.considerSymptom.map((policy=>(<Box key={props.value.symbol} component='li'>{policy}</Box>)))}</Box>
@@ -53,6 +56,10 @@ function BorderBoxContent(props){
     )
 }
 
+function replaceWithBr(input_string) {
+    console.log(input_string.replace("\\n ","<br />"))
+    return input_string.replace("\\n", "<br />")
+  }
 // interface Claim {
 //     companyName: string;
 //     policeId: string;

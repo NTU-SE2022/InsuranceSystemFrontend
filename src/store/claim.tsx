@@ -269,6 +269,9 @@ export const Claim = ({address,keyword}:PolicyAddress) => {
             method: 'balanceOf',
             param: [accounts[0]],
             callback: (res) => {
+                console.log(accounts[0])
+                console.log(address)
+                console.log(res)
                 setAmount(res);
             }
         });
