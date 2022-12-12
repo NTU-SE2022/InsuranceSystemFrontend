@@ -243,8 +243,8 @@ export const Policy = ({address,keyword}:PolicyAddress) => {
             method: 'eligibilityVerificationForPurchase',
             param: [],
             callback: (res) => {
-                // setHealthVerfication(res);
-                console.log(res)
+                setHealthVerfication(res);
+                // console.log(res)
             }
         });
     }
