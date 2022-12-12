@@ -132,7 +132,7 @@ export function ClaimDialog(props){
         </DialogTitle>
         <DialogContent>
             <DialogContentText id="alert-dialog-description">
-                <Box component="p">{`請確認是否申請理賠，若按下確認，保險公司將立即理賠相對應費用 ${money} ETH`}</Box>
+                <Box component="p">{`請確認是否申請理賠，若按下確認，保險公司將立即理賠相對應費用 ${money} WEI`}</Box>
             </DialogContentText>
         </DialogContent>
         <DialogActions>
