@@ -171,7 +171,7 @@ export const Policy = ({address,keyword}:PolicyAddress) => {
     const [policyName,setPolicyName] = React.useState('');
     const [considerSymptom, setConsiderSymptom] = React.useState<string[]>([]);
 
-    const [healthVerfication,setHealthVerfication] = React.useState(true);
+    const [healthVerfication,setHealthVerfication] = React.useState(false);
     const [onHealthError,setOnHealthError] = React.useState(false);
     const [open,setOpen] = React.useState(false);
     const [onBuySuccess, setOnBuySuccess] = React.useState(false);
@@ -239,12 +239,18 @@ export const Policy = ({address,keyword}:PolicyAddress) => {
     };
 
     const getHealthVerfication = () => {
+        // if(!contract) return
+        // contract.methods['eligibilityVerificationForPurchase'].apply(this, []).call({"from": accounts[0]}).then((res:any)=>{
+        //     setHealthVerfication(true);
+        // }).catch((error:any)=>{
+        //     console.log(error);
+        // });
         contractCall({
             method: 'eligibilityVerificationForPurchase',
             param: [],
             callback: (res) => {
                 setHealthVerfication(res);
-                // console.log(res)
+                console.log(res)
             }
         });
     }
@@ -254,7 +260,7 @@ export const Policy = ({address,keyword}:PolicyAddress) => {
             method: 'getConsideredSymptoms',
             param: [],
             callback: (res) => {
-                console.log(res);
+                // console.log(res);
                 setConsiderSymptom(res);
                 // console.log(res)
             }
@@ -281,6 +287,7 @@ export const Policy = ({address,keyword}:PolicyAddress) => {
     }
 
     const handleBuyClick = () => {
+        console.log(healthVerfication)
         if(healthVerfication){
           setOpen(true);
         }
