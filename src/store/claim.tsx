@@ -412,7 +412,7 @@ export const Claim = ({address,keyword}:PolicyAddress) => {
                 <>
                 <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><ClaimBox value={policy} onclick={handleClaimClick} onbuy={handlePayment} expired={Boolean(expired)}></ClaimBox></Box>
                 <ClaimDialog value={open} onClose={()=>{setOpen(false)}} onsuccess={ handleBuySuccess } policy={policy} onClaim = {handleMakeClaim}></ClaimDialog>
-                <ErrorDialog value={onClaimSuccess} title={'申請理賠成功！'} context={`保險公司已支付 ${amount*price} ETH到您戶頭。`} onClose={()=>{ setOnClaimSuccess(false)}}></ErrorDialog>
+                <ErrorDialog value={onClaimSuccess} title={'申請理賠成功！'} context={`保險公司已支付 ${amount*price} WEI到您戶頭。`} onClose={()=>{ setOnClaimSuccess(false)}}></ErrorDialog>
                 <ErrorDialog value={onCertificateError} title={'不符合資格'} context={'並無相關診斷證明可申請理賠，若結果不符預期請洽詢保險公司。'} onClose={()=>{setOnCertificateError(false)}}></ErrorDialog>
                 <ErrorDialog value={onBuyError} title={'購買失敗！'} context={`你帳戶餘額低於${amount * price}WEI，請確認帳戶餘額充足後再試一次。`} onClose={()=>{setOnBuyError(false)}}></ErrorDialog>
                 </>

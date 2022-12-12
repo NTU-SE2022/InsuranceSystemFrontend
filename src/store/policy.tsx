@@ -310,8 +310,8 @@ export const Policy = ({address,keyword}:PolicyAddress) => {
             <Box>
             <Box sx={{ display:"flex",justifyContent:"center",alignItems:"center",p: 1,m: 1}}><BorderBox value={policy} onclick={handleBuyClick} ></BorderBox></Box>
             <BuyPolicyDialog value={open} onClose={()=>{setOpen(false)}} onsuccess={() => setOnBuySuccess(true)} handleBuyPolicy = {buyPolicy} onerror={()=>setOnBuyError(true)} onovernumber = {()=>{setOnOverNumberError(true)}} policy = {policy}></BuyPolicyDialog>
-            <ErrorDialog value={onBuySuccess} title={'購買成功！'} context={`成功購買${amount}單位！已從帳戶扣款${amount * price}ETH。`} onClose={()=>{ setOnBuySuccess(false)}} ></ErrorDialog>
-            <ErrorDialog value={onBuyError} title={'購買失敗！'} context={`你帳戶餘額低於${amount * price}ETH，請確認帳戶餘額充足後再試一次。`} onClose={()=>{setOnBuyError(false)}}></ErrorDialog>
+            <ErrorDialog value={onBuySuccess} title={'購買成功！'} context={`成功購買${amount}單位！已從帳戶扣款${amount * price}WEI。`} onClose={()=>{ setOnBuySuccess(false)}} ></ErrorDialog>
+            <ErrorDialog value={onBuyError} title={'購買失敗！'} context={`你帳戶餘額低於${amount * price}WEI，請確認帳戶餘額充足後再試一次。`} onClose={()=>{setOnBuyError(false)}}></ErrorDialog>
             <ErrorDialog value={onHealthError} title={'不符合資格'} context={'你的健康狀況並不符合加保資格！請參考其他保單，或洽保險公司諮詢。'} onClose={()=>{setOnHealthError(false)}}></ErrorDialog>
             <ErrorDialog value={onOverNumberError} title={'超出可購買數量'} context={`可購買數量為${maxQuantity}，請調整數量`} onClose={()=>{setOnOverNumberError(false)}}></ErrorDialog>
             </Box>
