@@ -93,7 +93,7 @@ export function BuyPolicyDialog(props){
         aria-describedby="alert-dialog-description"
         >        
         <DialogTitle id="alert-dialog-title">
-        {"是否購買保單"}
+        {"Buy Polucy?"}
         </DialogTitle>
         <DialogContent>
             <DialogContentText id="alert-dialog-description">
@@ -103,8 +103,8 @@ export function BuyPolicyDialog(props){
             </DialogContentText>
         </DialogContent>
         <DialogActions>
-            <Button onClick={handleClose}>取消</Button>
-            <Button onClick={handlePolicyNumber} autoFocus>OK</Button>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handlePolicyNumber} autoFocus>Ok</Button>
         </DialogActions>
     </Dialog>
     )
@@ -128,16 +128,16 @@ export function ClaimDialog(props){
         aria-describedby="alert-dialog-description"
         >        
         <DialogTitle id="alert-dialog-title">
-        {"符合理賠資格"}
+        {"Claim Eligible"}
         </DialogTitle>
         <DialogContent>
             <DialogContentText id="alert-dialog-description">
-                <Box component="p">{`請確認是否申請理賠，若按下確認，保險公司將立即理賠相對應費用 ${money} WEI`}</Box>
+                <Box component="p">{`Confirm Claim, Insurance Company Claim ${money} WEI`}</Box>
             </DialogContentText>
         </DialogContent>
         <DialogActions>
-            <Button onClick={handleClose}>取消</Button>
-            <Button onClick={handleClick} autoFocus>OK</Button>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleClick} autoFocus>Ok</Button>
         </DialogActions>
     </Dialog>
     )

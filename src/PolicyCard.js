@@ -132,7 +132,7 @@ export function ClaimBox(props){
             </Box>
             <Box sx={{display:'flex',flexDirection:'column'}}>
                 <Box sx={{textAlign:'right',flexGrow:1}}><Button variant='outlined' fullWidth onClick={()=>props.onclick()} disabled={props.value.expired}>Claim</Button></Box>
-                <Box sx={{textAlign:'right',flexGrow:1}}><Button variant='outlined' fullWidth onClick={()=>props.onbuy()} disabled={!props.value.expired}>Pay</Button></Box>
+                {/* <Box sx={{textAlign:'right',flexGrow:1}}><Button variant='outlined' fullWidth onClick={()=>props.onbuy()} disabled={!props.value.expired}>Pay</Button></Box> */}
             </Box>
         </Box>
     )
