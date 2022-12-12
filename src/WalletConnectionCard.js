@@ -44,7 +44,11 @@ const LoginButton = ({
         variant="contained"
         style={{margin: '0 auto', display: "flex"}}
         onClick={() => {
-          enable();
+          if(!isMetaMaskInstalled){
+            alert('Cannot Find MetaMask,Check https://metamask.io/')
+          }else{
+            enable();
+          }
         }}
         disabled={Boolean(web3)}
     >
@@ -71,6 +75,7 @@ const LoginBox = () =>{
     enable,
     disable
 } = React.useContext(userWallet);
+
   // const wallet = useEthereum() 
   const navigate = useNavigate();
   React.useEffect(()=>{
